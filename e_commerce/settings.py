@@ -1,7 +1,7 @@
 """
 Django settings for e_commerce project.
 """
-
+import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 from decouple import config
@@ -14,9 +14,8 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = [host.strip() for host in config(
     "ALLOWED_HOSTS",
-    default="127.0.0.1,localhost"
+    default="127.0.0.1,localhost,shopzone-e-commerce.onrender.com"
 ).split(",") if host.strip()]
-
 
 # ==================== APPLICATIONS ====================
 INSTALLED_APPS = [
