@@ -1,0 +1,150 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/productlist.css' %}">
+{% endblock %}
+
+{% block title %}Our Products - ShopZone{% endblock %}
+
+{% block content %}
+<div class="products-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Our Products</h1>
+            <p class="subtitle">Discover our amazing collection of {{ products.paginator.count }} products</p>
+        </div>
+
+        <!-- Filters & Sort -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label for="categoryFilter">Category:</label>
+                <select id="categoryFilter" class="filter-select" onchange="window.location.href=this.value;">
+                    <option
+                        value="{% url 'MyStore:product_list' %}{% if current_sort %}?sort={{ current_sort }}{% endif %}"
+                        {% if not current_category %}selected{% endif %}>
+                        All Categories
+                    </option>
+
+                    {% for category in categories %}
+                    <option
+                        value="{% url 'MyStore:product_list' %}?category={{ category.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                        {% if current_category == category.slug %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortFilter">Sort by:</label>
+                <select id="sortFilter" class="filter-select" onchange="window.location.href=this.value;">
+                    <option
+                        value="{% url 'MyStore:product_list' %}{% if current_category %}?category={{ current_category }}{% endif %}"
+                        {% if not current_sort %}selected{% endif %}>
+                        Default
+                    </option>
+
+                    <option
+                        value="{% url 'MyStore:product_list' %}?sort=price_low{% if current_category %}&category={{ current_category }}{% endif %}"
+                        {% if current_sort == 'price_low' %}selected{% endif %}>
+                        Price: Low to High
+                    </option>
+
+                    <option
+                        value="{% url 'MyStore:product_list' %}?sort=price_high{% if current_category %}&category={{ current_category }}{% endif %}"
+                        {% if current_sort == 'price_high' %}selected{% endif %}>
+                        Price: High to Low
+                    </option>
+
+                    <option
+                        value="{% url 'MyStore:product_list' %}?sort=newest{% if current_category %}&category={{ current_category }}{% endif %}"
+                        {% if current_sort == 'newest' %}selected{% endif %}>
+                        Newest First
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x300?text={{ product.name|truncatewords:2 }}" alt="{{ product.name }}">
+                    {% endif %}
+
+                    {% if product.is_featured %}
+                    <span class="badge featured">Featured</span>
+                    {% endif %}
+
+                    {% if product.stock == 0 %}
+                    <span class="badge out-of-stock">Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-info">
+                    <div class="product-category">{{ product.category.name }}</div>
+                    <h3 class="product-name">{{ product.name }}</h3>
+
+                    <div class="product-pricing">
+                        {% if product.original_price > product.price %}
+                        <span class="original-price">₹{{ product.original_price }}</span>
+                        <span class="discount">{{ product.discount_percentage }}% OFF</span>
+                        {% endif %}
+                        <p class="price">₹{{ product.price }}</p>
+                    </div>
+
+                    <div class="product-meta">
+                        <span class="brand">{{ product.brand }}</span>
+                        {% if product.stock > 0 and product.stock < 10 %}
+                        <span class="stock-warning">Only {{ product.stock }} left!</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-actions">
+                        <a href="{% url 'MyStore:product_detail' product.slug %}" class="btn btn-primary">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-products">
+                <p>No products found.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="pagination">
+            {% if products.has_previous %}
+            <a
+                href="?page={{ products.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                class="btn btn-outline">
+                ← Previous
+            </a>
+            {% endif %}
+
+            <span class="page-info">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}
+            </span>
+
+            {% if products.has_next %}
+            <a
+                href="?page={{ products.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                class="btn btn-outline">
+                Next →
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Request Refund - ShopZone{% endblock %}
+
+{% block content %}
+<div class="refund-page">
+    <div class="container">
+        <div class="refund-container">
+            <h1>Request Refund</h1>
+            <p>Order #{{ order.order_number }}</p>
+            
+            <form method="post" class="refund-form">
+                {% csrf_token %}
+                
+                <div class="order-info">
+                    <h3>Order Details</h3>
+                    <div class="info-row">
+                        <span>Order Date:</span>
+                        <span>{{ order.created_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Total Amount:</span>
+                        <span>₹{{ order.total_amount }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Payment Status:</span>
+                        <span class="status-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reason">Reason for Refund *</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="5" required placeholder="Please explain why you want a refund..."></textarea>
+                </div>
+                
+                <div class="refund-policy">
+                    <h4>Refund Policy</h4>
+                    <ul>
+                        <li>Refunds are processed within 7-10 business days</li>
+                        <li>Amount will be credited to your original payment method</li>
+                        <li>Items must be unused and in original packaging</li>
+                        <li>Refund requests must be made within 7 days of delivery</li>
+                    </ul>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger btn-lg">Submit Refund Request</button>
+                    <a href="{% url 'MyStore:order_detail' order.id %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.refund-page {
+    padding: var(--space-2xl) 0;
+    background-color: var(--color-gray-50);
+}
+
+.refund-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--color-white);
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.refund-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+}
+
+.refund-container > p {
+    color: var(--color-gray-600);
+    margin-bottom: var(--space-2xl);
+}
+
+.order-info {
+    padding: var(--space-lg);
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.order-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+}
+
+.refund-policy {
+    padding: var(--space-lg);
+    background-color: #fef3c7;
+    border-left: 4px solid var(--color-warning);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.refund-policy h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.refund-policy ul {
+    margin: 0;
+    padding-left: var(--space-lg);
+}
+
+.refund-policy li {
+    font-size: 0.875rem;
+    margin-bottom: var(--space-sm);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+}
+</style>
+{% endblock %}

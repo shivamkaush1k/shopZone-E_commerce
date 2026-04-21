@@ -1,0 +1,145 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Payment - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/initiate.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="payment-page">
+  <div class="payment-container">
+    <header class="payment-header">
+      <h1 class="payment-title">Complete Payment</h1>
+      <p class="payment-subtitle">Review your order and choose a secure payment method</p>
+    </header>
+
+    <div class="payment-grid">
+      <section class="order-summary-card" aria-labelledby="order-summary-heading">
+        <header class="card-header">
+          <h2 id="order-summary-heading">Order Summary</h2>
+        </header>
+
+        <div class="card-body">
+          <table class="order-summary-table">
+            <tbody>
+              <tr>
+                <td>Order ID</td>
+                <td>#{{ order.order_number }}</td>
+              </tr>
+              <tr>
+                <td>Total Amount</td>
+                <td class="order-total">₹{{ order.total_amount|floatformat:2 }}</td>
+              </tr>
+              <tr>
+                <td>Payment Status</td>
+                <td>
+                  <span class="payment-status-badge payment-status-badge--pending">
+                    Pending Payment
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Items</td>
+                <td>{{ order.order_items.count }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="payment-methods-card" aria-labelledby="payment-method-heading">
+        <header class="card-header">
+          <h2 id="payment-method-heading">Select Payment Method</h2>
+        </header>
+
+        <div class="card-body">
+          <form method="post" id="paymentForm" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+
+            {% if form.non_field_errors %}
+              <div class="form-error form-error--block" role="alert">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+
+            <fieldset class="payment-methods-fieldset">
+              <legend class="saved-payment-label">Payment methods</legend>
+
+              <div class="payment-methods-grid">
+                {% for radio in form.payment_method %}
+                  <div class="payment-method-option" data-method="{{ radio.choice_value }}">
+                    {{ radio.tag }}
+                    <label class="payment-method-label" for="{{ radio.id_for_label }}">
+                      {{ radio.choice_label }}
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+
+              {% if form.payment_method.errors %}
+                <div class="form-error" role="alert">
+                  {{ form.payment_method.errors }}
+                </div>
+              {% endif %}
+            </fieldset>
+
+            {% if has_saved_payments %}
+              <div class="saved-payments-section">
+                <div class="saved-payments-toggle">
+                  <input
+                    type="checkbox"
+                    class="saved-payments-checkbox"
+                    id="useSavedPayment"
+                    aria-controls="savedPaymentsList"
+                    aria-expanded="false"
+                  >
+                  <label class="saved-payments-label" for="useSavedPayment">
+                    Use saved payment method
+                  </label>
+                </div>
+
+                <div id="savedPaymentsList" class="saved-payments-list is-hidden">
+                  <label class="saved-payment-label" for="{{ form.saved_payment.id_for_label }}">
+                    Select saved payment method
+                  </label>
+                  {{ form.saved_payment }}
+
+                  {% if form.saved_payment.errors %}
+                    <div class="form-error" role="alert">
+                      {{ form.saved_payment.errors }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="payment-actions">
+              <button type="submit" class="btn btn-primary btn-hero">
+                Proceed to Payment
+              </button>
+              <a href="{% url 'MyStore:checkout' %}" class="btn btn-outline">
+                Back to Checkout
+              </a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <aside class="security-notice" aria-label="Security information">
+      <span class="security-icon" aria-hidden="true">🔒</span>
+      <p>
+        <strong>Secure Checkout</strong> - Your payment information is protected with
+        bank-level SSL encryption and PCI DSS compliance.
+      </p>
+    </aside>
+  </div>
+</main>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/initiate.js' %}" defer></script>
+{% endblock %}

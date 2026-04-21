@@ -1,0 +1,260 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}My Profile — {{ user.username }}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+  <div class="profile-layout">
+
+    <aside class="profile-sidebar">
+      <div class="profile-card">
+        <div class="profile-avatar">
+          {% if user.userprofile and user.userprofile.profile_picture %}
+            <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }} profile picture">
+          {% else %}
+            <div class="avatar-initials">
+              {{ user.username|slice:":1"|upper }}
+            </div>
+          {% endif %}
+        </div>
+
+        <h1 class="profile-name">
+          {{ user.get_full_name|default:user.username }}
+        </h1>
+
+        {% if user.get_full_name %}
+          <p class="profile-username">@{{ user.username }}</p>
+        {% endif %}
+
+        <p class="profile-email">{{ user.email }}</p>
+
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ total_orders|default:0 }}</span>
+            <span class="stat-label">Orders</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ wishlist_count|default:0 }}</span>
+            <span class="stat-label">Wishlist</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ cart_items|default:0 }}</span>
+            <span class="stat-label">Cart</span>
+          </div>
+        </div>
+
+        <a href="{% url 'MyAccount:edit_profile' %}" class="btn btn-primary btn-full btn-edit-profile">
+          Edit Profile
+        </a>
+      </div>
+
+      <nav class="profile-nav" aria-label="Profile sections">
+        <button class="nav-item active" type="button" data-section="overview" role="tab" aria-selected="true" aria-controls="overview">
+          Overview
+        </button>
+        <button class="nav-item" type="button" data-section="orders" role="tab" aria-selected="false" aria-controls="orders">
+          Orders
+        </button>
+        <button class="nav-item" type="button" data-section="wishlist" role="tab" aria-selected="false" aria-controls="wishlist">
+          Wishlist
+        </button>
+        <button class="nav-item" type="button" data-section="addresses" role="tab" aria-selected="false" aria-controls="addresses">
+          Addresses
+        </button>
+        <button class="nav-item" type="button" data-section="settings" role="tab" aria-selected="false" aria-controls="settings">
+          Settings
+        </button>
+        <a href="{% url 'login:logout' %}" class="nav-item logout">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="profile-content">
+
+      <section id="overview" class="content-section active" role="tabpanel" aria-labelledby="overview-tab">
+        <div class="overview-kpis">
+          <div class="kpi-card">
+            <span class="kpi-label">Total Orders</span>
+            <span class="kpi-value">{{ total_orders|default:0 }}</span>
+            <span class="kpi-meta">All time</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Wishlist</span>
+            <span class="kpi-value">{{ wishlist_count|default:0 }}</span>
+            <span class="kpi-meta">Saved items</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Cart</span>
+            <span class="kpi-value">{{ cart_items|default:0 }}</span>
+            <span class="kpi-meta">Items ready</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Orders</h2>
+            <button class="btn btn-ghost btn-sm" type="button" data-section="orders">View all</button>
+          </div>
+
+          {% if recent_orders %}
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                  <td>#{{ order.id }}</td>
+                  <td>{{ order.created_at|date:"d M, Y" }}</td>
+                  <td class="status-cell">
+                    <span class="badge badge-{{ order.status }}">
+                      {{ order.get_status_display|default:order.status|capfirst }}
+                    </span>
+                  </td>
+                  <td>₹{{ order.total_amount }}</td>
+                  <td>
+                    <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <h3>No orders yet</h3>
+            <p>Your orders will appear here once you start shopping.</p>
+            <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Start shopping</a>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="orders" class="content-section" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">My Orders</h2>
+          </div>
+
+          {% if orders %}
+          <div class="table-wrapper">
+            <table class="data-table orders-table">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Items</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                <tr>
+                  <td>#{{ order.id }}</td>
+                  <td>{{ order.created_at|date:"d M, Y" }}</td>
+                  <td class="status-cell">
+                    <span class="badge badge-{{ order.status }}">
+                      {{ order.get_status_display|default:order.status|capfirst }}
+                    </span>
+                  </td>
+                  <td>₹{{ order.total_amount }}</td>
+                  <td>{{ order.items.all|length }}</td>
+                  <td>
+                    <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <h3>No orders yet</h3>
+            <p>Looks like you haven't placed any orders.</p>
+            <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Browse products</a>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="wishlist" class="content-section" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Wishlist</h2>
+          </div>
+          <div class="empty-state">
+            <p>Add your wishlist content here.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="addresses" class="content-section" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Addresses</h2>
+          </div>
+          <div class="empty-state">
+            <p>Add your addresses content here.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings" class="content-section" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Settings</h2>
+          </div>
+          <div class="empty-state">
+            <p>Add your settings content here.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const triggers = document.querySelectorAll('[data-section]');
+  const sections = document.querySelectorAll('.content-section');
+  const navButtons = document.querySelectorAll('.profile-nav .nav-item[data-section]');
+
+  function activateSection(target) {
+    sections.forEach(section => {
+      const isActive = section.id === target;
+      section.classList.toggle('active', isActive);
+      section.hidden = !isActive;
+    });
+
+    navButtons.forEach(btn => {
+      const isActive = btn.dataset.section === target;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+  }
+
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', function (e) {
+      const target = this.dataset.section;
+      if (!target) return;
+      e.preventDefault();
+      activateSection(target);
+    });
+  });
+});
+</script>
+{% endblock %}

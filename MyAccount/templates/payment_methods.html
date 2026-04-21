@@ -1,0 +1,83 @@
+{% extends 'MyAccountBase.html' %}
+
+{% block content %}
+<div class="payment-methods-container container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Payment Methods</h2>
+        <a href="{% url 'MyAccount:add_payment_method' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Payment Method
+        </a>
+    </div>
+
+    {% if methods %}
+    <div class="row">
+        {% for method in methods %}
+        <div class="col-md-6 mb-4">
+            <div class="card payment-card shadow-sm rounded-4">
+                <div class="card-body">
+
+                    <!-- Card Type Icon and Default Badge -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            {% if method.payment_type == 'card' %}
+                                <i class="fas fa-credit-card fa-2x text-primary" aria-hidden="true"></i>
+                            {% elif method.payment_type == 'wallet' %}
+                                <i class="fas fa-wallet fa-2x text-info" aria-hidden="true"></i>
+                            {% elif method.payment_type == 'bank' %}
+                                <i class="fas fa-university fa-2x text-success" aria-hidden="true"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if method.is_default %}
+                                <span class="badge bg-success" aria-label="Default Payment Method">Default</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Card Details -->
+                    <h5 class="card-title">{{ method.card_brand|default:'Payment Method' }}</h5>
+                    <p class="card-text"><strong>•••• {{ method.card_number_last_4 }}</strong></p>
+
+                    {% if method.card_expiry_month and method.card_expiry_year %}
+                    <p class="card-text text-muted"><small>Expires: {{ method.card_expiry_month }}/{{ method.card_expiry_year }}</small></p>
+                    {% endif %}
+
+                    <p class="card-text"><small>{{ method.card_holder_name }}</small></p>
+
+                    <!-- Actions -->
+                    <div class="btn-group w-100 mt-3" role="group" aria-label="Payment method actions">
+                        {% if not method.is_default %}
+                        <form method="POST" action="{% url 'MyAccount:set_default_payment' method.id %}" style="flex: 1;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary w-100 btn-sm" aria-label="Set as default payment method">
+                                Set as Default
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <a href="{% url 'MyAccount:edit_payment_method' method.id %}" class="btn btn-outline-primary btn-sm" style="flex: 1;" aria-label="Edit payment method">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'MyAccount:delete_payment_method' method.id %}" class="btn btn-outline-danger btn-sm" style="flex: 1;"
+                           onclick="return confirm('Delete this payment method?');" aria-label="Delete payment method">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="alert alert-info text-center shadow-sm rounded-4">
+        <h5>No Payment Methods</h5>
+        <p>You haven't added any payment methods yet.</p>
+        <a href="{% url 'MyAccount:add_payment_method' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Payment Method
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

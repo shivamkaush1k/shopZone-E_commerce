@@ -1,0 +1,312 @@
+/* =========================================================
+   SHOPZONE PAYMENT PAGE (initiate.css)
+   Production-ready, responsive, clean BEM structure
+   ========================================================= */
+
+/* =========================
+   ROOT (inherits if already defined)
+   ========================= */
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+
+  --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --transition: all 0.25s ease;
+}
+
+/* =========================
+   PAGE LAYOUT
+   ========================= */
+.payment-page {
+  background: var(--bg);
+  padding: 3rem 1rem;
+  min-height: 80vh;
+}
+
+.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.payment-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.payment-title {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.4rem;
+}
+
+.payment-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* =========================
+   GRID
+   ========================= */
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 1.8rem;
+}
+
+/* =========================
+   CARDS
+   ========================= */
+.order-summary-card,
+.payment-methods-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.card-body {
+  padding: 1.4rem;
+}
+
+/* =========================
+   ORDER TABLE
+   ========================= */
+.order-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-summary-table td {
+  padding: 0.65rem 0;
+  font-size: 0.95rem;
+}
+
+.order-summary-table td:first-child {
+  color: var(--text-muted);
+}
+
+.order-total {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+/* =========================
+   STATUS BADGE
+   ========================= */
+.payment-status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.payment-status-badge--pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+/* =========================
+   PAYMENT METHODS
+   ========================= */
+.payment-methods-grid {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  background: #fff;
+}
+
+.payment-method-option:hover {
+  border-color: var(--primary);
+}
+
+.payment-method-option input {
+  accent-color: var(--primary);
+}
+
+.payment-method-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* SELECTED STATE */
+.payment-method-option--selected {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+/* =========================
+   SAVED PAYMENTS
+   ========================= */
+.saved-payments-section {
+  margin-top: 1rem;
+}
+
+.saved-payments-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.saved-payments-checkbox {
+  accent-color: var(--primary);
+}
+
+.saved-payments-label {
+  cursor: pointer;
+}
+
+/* =========================
+   ACTION BUTTONS
+   ========================= */
+.payment-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+/* BUTTON BASE */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+/* PRIMARY */
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* OUTLINE */
+.btn-outline {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* =========================
+   SECURITY NOTICE
+   ========================= */
+.security-notice {
+  margin-top: 2rem;
+  padding: 1rem 1.2rem;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  color: #065f46;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.security-icon {
+  font-size: 1.2rem;
+}
+
+/* =========================
+   ACCESSIBILITY
+   ========================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.payment-method-option.is-selected {
+  border: 2px solid var(--color-primary, #0066cc);
+  background-color: oklch(from var(--color-primary) l c h / 0.05);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 900px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .payment-page {
+    padding: 2rem 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .payment-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

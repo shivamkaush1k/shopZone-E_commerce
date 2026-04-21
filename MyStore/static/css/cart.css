@@ -1,0 +1,226 @@
+
+.cart-page {
+    padding: 40px 0 70px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.cart-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 24px;
+}
+
+.cart-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+.cart-table thead {
+    background: #0f172a;
+}
+
+.cart-table thead th {
+    color: #ffffff;
+    text-align: left;
+    padding: 18px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.cart-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.25s ease;
+}
+
+.cart-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.cart-table tbody td {
+    padding: 18px 20px;
+    color: #334155;
+    font-size: 0.98rem;
+    vertical-align: middle;
+}
+
+.quantity-input {
+    width: 90px;
+    height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: #fff;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.quantity-input:focus {
+    border-color: #0f766e;
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+}
+
+.item-total {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.btn-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.btn-remove:hover {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.cart-summary {
+    margin-top: 28px;
+    margin-left: auto;
+    max-width: 380px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.cart-summary h3 {
+    margin: 0 0 18px;
+    font-size: 1.35rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cart-total-btn {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 2px solid #e2e8f0;
+    transition: all 0.25s ease;
+}
+
+.cart-total-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+}
+
+.cart-summary .btn {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.cart-empty {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.cart-empty p {
+    font-size: 1.1rem;
+    color: #475569;
+    margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+    .cart-page {
+        padding: 28px 0 50px;
+    }
+
+    .cart-title {
+        font-size: 1.7rem;
+    }
+
+    .cart-table {
+        min-width: 100%;
+    }
+
+    .cart-table thead {
+        display: none;
+    }
+
+    .cart-table,
+    .cart-table tbody,
+    .cart-table tr,
+    .cart-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .cart-table tbody tr {
+        padding: 14px;
+        background: #ffffff;
+    }
+
+    .cart-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 10px;
+        border-bottom: 1px solid #edf2f7;
+        text-align: right;
+    }
+
+    .cart-table tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .cart-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #0f172a;
+        text-align: left;
+    }
+
+    .quantity-input {
+        width: 78px;
+        height: 40px;
+    }
+
+    .cart-summary {
+        max-width: 100%;
+    }
+}

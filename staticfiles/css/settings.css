@@ -1,0 +1,204 @@
+/* ==========================================
+   SETTINGS PAGE CSS
+   File: static/css/settings.css
+   ========================================== */
+
+.account-settings-section {
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.account-settings-header {
+    margin-bottom: 2rem;
+}
+
+.account-settings-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.account-settings-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Alerts */
+.custom-alert {
+    border: none;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.custom-alert.alert-success {
+    background-color: #eafaf1;
+    color: #146c43;
+}
+
+.custom-alert.alert-danger,
+.custom-alert.alert-error {
+    background-color: #fdecec;
+    color: #b02a37;
+}
+
+.custom-alert.alert-warning {
+    background-color: #fff4e5;
+    color: #9a6700;
+}
+
+.custom-alert.alert-info {
+    background-color: #e8f4fd;
+    color: #0c63e4;
+}
+
+/* Card */
+.account-settings-card {
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+}
+
+.account-settings-card-body {
+    padding: 2rem;
+}
+
+/* List */
+.account-settings-list {
+    margin: 0;
+    padding: 0;
+}
+
+.account-settings-item {
+    border: 0;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 !important;
+    background: transparent;
+}
+
+.account-settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    transition: all 0.25s ease;
+}
+
+.account-settings-item:hover .settings-item-content {
+    transform: translateX(2px);
+}
+
+.settings-item-text {
+    flex: 1;
+}
+
+.settings-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.35rem;
+}
+
+.settings-item-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Button */
+.settings-action-btn {
+    min-width: 90px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.25s ease-in-out;
+}
+
+.settings-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.15);
+}
+
+/* Focus */
+.settings-action-btn:focus,
+.btn-close:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .account-settings-title {
+        font-size: 1.65rem;
+    }
+
+    .account-settings-subtitle {
+        font-size: 0.92rem;
+    }
+
+    .account-settings-card-body {
+        padding: 1.5rem;
+    }
+
+    .settings-item-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .settings-action-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .account-settings-section {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .account-settings-title {
+        font-size: 1.4rem;
+    }
+
+    .account-settings-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .account-settings-card {
+        border-radius: 1rem;
+    }
+
+    .account-settings-card-body {
+        padding: 1.1rem;
+    }
+
+    .settings-item-content {
+        padding: 1rem 0;
+    }
+
+    .settings-item-title {
+        font-size: 0.95rem;
+    }
+
+    .settings-item-description {
+        font-size: 0.85rem;
+    }
+
+    .custom-alert {
+        font-size: 0.9rem;
+        padding: 0.8rem 0.95rem;
+    }
+}

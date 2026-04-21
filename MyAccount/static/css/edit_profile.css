@@ -1,0 +1,178 @@
+/* =========================================
+   EDIT PROFILE PAGE - SHOPZONE STYLE
+   ========================================= */
+
+/* ===== ROOT VARIABLES ===== */
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --secondary: #64748b;
+
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+
+  --text-dark: #0f172a;
+  --text-light: #475569;
+
+  --border: #e2e8f0;
+  --radius: 14px;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+}
+
+/* ===== PAGE WRAPPER ===== */
+.edit-profile {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== HEADING ===== */
+.edit-profile h3 {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* ===== CARD ===== */
+.edit-profile .card {
+  border: none;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* ===== CARD BODY ===== */
+.edit-profile .card-body {
+  padding: 30px;
+}
+
+/* ===== FORM STYLING ===== */
+.edit-profile form p {
+  margin-bottom: 18px;
+}
+
+/* Labels */
+.edit-profile label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-dark);
+}
+
+/* Inputs */
+.edit-profile input,
+.edit-profile textarea,
+.edit-profile select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+/* Input focus */
+.edit-profile input:focus,
+.edit-profile textarea:focus,
+.edit-profile select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Help text */
+.edit-profile .helptext {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* Error messages */
+.edit-profile .errorlist {
+  margin-top: 5px;
+  padding-left: 0;
+  list-style: none;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+/* ===== BUTTONS ===== */
+.edit-profile .btn {
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+/* Primary button */
+.edit-profile .btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+}
+
+.edit-profile .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+}
+
+/* Secondary button */
+.edit-profile .btn-outline-secondary {
+  border: 1px solid var(--border);
+  color: var(--text-light);
+}
+
+.edit-profile .btn-outline-secondary:hover {
+  background: #f1f5f9;
+  color: var(--text-dark);
+}
+
+/* ===== ALERTS ===== */
+.edit-profile .alert {
+  border-radius: 10px;
+  font-size: 14px;
+  padding: 12px 14px;
+}
+
+/* Success */
+.edit-profile .alert-success {
+  background: #ecfdf5;
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+/* Error */
+.edit-profile .alert-danger {
+  background: #fef2f2;
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .edit-profile .card-body {
+    padding: 20px;
+  }
+
+  .edit-profile h3 {
+    font-size: 20px;
+  }
+
+  .edit-profile .btn {
+    width: 48%;
+    padding: 8px;
+  }
+}
+
+/* ===== SMALL SCREENS ===== */
+@media (max-width: 480px) {
+  .edit-profile .d-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .edit-profile .btn {
+    width: 100%;
+  }
+}

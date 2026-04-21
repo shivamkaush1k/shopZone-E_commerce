@@ -1,0 +1,91 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Payment Receipt - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/payment/receipt.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="receipt-page">
+  <div class="receipt-wrapper">
+    <div class="receipt-toolbar">
+      <h1 class="receipt-page-title">Payment Receipt</h1>
+      <button type="button" onclick="window.print()" class="btn btn-outline-secondary">
+        <i class="fas fa-print" aria-hidden="true"></i> Print Receipt
+      </button>
+    </div>
+
+    <div id="receipt" class="receipt-card">
+      <!-- Header -->
+      <div class="receipt-section receipt-section--header">
+        <div class="receipt-header-grid">
+          <div>
+            <h3 class="receipt-brand">ShopZone</h3>
+            <p class="receipt-muted">www.shopzone.com</p>
+          </div>
+          <div class="receipt-header-right">
+            <h5 class="receipt-label">RECEIPT</h5>
+            <p class="receipt-muted">Invoice #{{ invoice.invoice_number }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment & Bill To -->
+      <div class="receipt-section">
+        <div class="receipt-info-grid">
+          <div>
+            <h6 class="receipt-subheading">Payment Details</h6>
+            <table class="receipt-table receipt-table--compact">
+              <tbody>
+                <tr><td><strong>Transaction ID:</strong></td><td><code>{{ payment.transaction_id }}</code></td></tr>
+                <tr><td><strong>Order ID:</strong></td><td>#{{ payment.order.order_number }}</td></tr>
+                <tr><td><strong>Date:</strong></td><td>{{ payment.completed_at|date:"M d, Y" }}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h6 class="receipt-subheading">Bill To</h6>
+            <p class="receipt-bill-line"><strong>{{ invoice.bill_to_name }}</strong></p>
+            <p class="receipt-bill-line">{{ invoice.bill_to_email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Totals -->
+      <div class="receipt-section receipt-section--border-top">
+        <div class="receipt-total-grid">
+          <table class="receipt-table receipt-table--compact">
+            <tbody>
+              <tr><td><strong>Subtotal:</strong></td><td class="text-end">₹{{ invoice.subtotal|floatformat:2 }}</td></tr>
+              <tr class="receipt-total-row">
+                <td><strong>Total Amount:</strong></td>
+                <td class="text-end"><strong class="receipt-total-amount">₹{{ invoice.total|floatformat:2 }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="receipt-section receipt-section--footer">
+        <p>Thank you for shopping at ShopZone!</p>
+      </div>
+    </div>
+
+    <div class="receipt-actions">
+      <button onclick="window.print()" class="btn btn-primary">Download PDF</button>
+      <a href="{% url 'PaymentMethod:payment_history' %}" class="btn btn-outline-secondary">Back to History</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-print for receipts
+  if (window.matchMedia('print').matches) {
+    window.print();
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'MyAccountBase.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Return Policy</h1>
+    
+    {% if policy %}
+    <div class="card">
+        <div class="card-body">
+            <!-- Policy Overview -->
+            <div class="alert alert-info">
+                <h5>Quick Info</h5>
+                <ul class="mb-0">
+                    <li><strong>Return Window:</strong> {{ policy.return_window_days }} days from purchase</li>
+                    <li><strong>Refund:</strong> {{ policy.refund_percentage }}% refund on eligible items</li>
+                </ul>
+            </div>
+            
+            <!-- Description -->
+            <h4 class="mt-4">Policy Overview</h4>
+            <p>{{ policy.description|linebreaks }}</p>
+            
+            <!-- Conditions -->
+            <h4 class="mt-4">Return Conditions</h4>
+            <div class="bg-light p-3 rounded">
+                {{ policy.conditions|linebreaks }}
+            </div>
+            
+            <!-- Process Steps -->
+            <h4 class="mt-4">How to Return Items</h4>
+            <div class="bg-light p-3 rounded">
+                {{ policy.process_steps|linebreaks }}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-5">
+                <a href="{% url 'MyStore:request_return' %}" class="btn btn-primary btn-lg">
+                    Request a Return
+                </a>
+                <a href="{% url 'MyStore:my_returns' %}" class="btn btn-outline-primary btn-lg">
+                    View My Returns
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        No return policy is currently available. Please contact support.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

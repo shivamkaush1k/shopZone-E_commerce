@@ -1,0 +1,171 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Wishlist - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="wishlist-page">
+    <div class="container">
+        <h1 class="wishlist-page__title">My Wishlist</h1>
+
+        {% if wishlist_items %}
+            <div class="wishlist-page__items">
+                <table class="wishlist-page__table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in wishlist_items %}
+                            <tr>
+                                <td>
+                                    <div class="wishlist-page__product-info">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="wishlist-page__product-image">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/100x100" alt="{{ item.product.name }}" class="wishlist-page__product-image">
+                                        {% endif %}
+
+                                        <div class="wishlist-page__product-details">
+                                            {% if item.product.slug %}
+                                                <h3>
+                                                    <a href="{% url 'MyStore:product_detail' item.product.slug %}" class="wishlist-page__product-link wishlist-page__product-title">
+                                                        {{ item.product.name }}
+                                                    </a>
+                                                </h3>
+                                            {% else %}
+                                                <h3 class="wishlist-page__product-title">{{ item.product.name }}</h3>
+                                            {% endif %}
+                                            <p class="wishlist-page__product-desc">{{ item.product.description|truncatewords:10 }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="wishlist-page__price-cell">
+                                    <div class="wishlist-page__price-display">₹{{ item.product.price }}</div>
+                                    {% if item.product.original_price > item.product.price %}
+                                        <div class="wishlist-page__original-price">₹{{ item.product.original_price }}</div>
+                                    {% endif %}
+                                </td>
+
+                                <td class="wishlist-page__stock-cell">
+                                    {% if item.product.stock > 0 %}
+                                        <span class="wishlist-page__stock-available">In Stock ({{ item.product.stock }})</span>
+                                    {% else %}
+                                        <span class="wishlist-page__stock-out">Out of Stock</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="wishlist-page__actions-cell">
+                                    <div class="wishlist-page__action-buttons">
+                                        <form method="post" class="wishlist-page__form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="remove_product_id" value="{{ item.product.id }}">
+                                            <button type="submit" class="wishlist-page__btn wishlist-page__btn--danger">
+                                                Remove
+                                            </button>
+                                        </form>
+
+                                        {% if item.product.slug %}
+                                            <a href="{% url 'MyStore:product_detail' item.product.slug %}" class="wishlist-page__btn wishlist-page__btn--info">
+                                                View
+                                            </a>
+                                        {% endif %}
+
+                                        {% if item.product.stock > 0 and item.product.is_active %}
+                                            <form method="post" action="{% url 'MyStore:add_to_cart' item.product.id %}" class="wishlist-page__form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="wishlist-page__btn wishlist-page__btn--primary">
+                                                    Add to Cart
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button class="wishlist-page__btn wishlist-page__btn--secondary" disabled>
+                                                Not Available
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="wishlist-page__empty">
+                <p>Your wishlist is empty</p>
+                <a href="{% url 'MyStore:product_list' %}" class="wishlist-page__btn wishlist-page__btn--primary">
+                    Continue Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCsrfToken() {
+    const input = document.querySelector('[name=csrfmiddlewaretoken]');
+    return input ? input.value : '';
+}
+
+function showMessage(message, type) {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.innerText = message;
+
+    const container = document.querySelector(".container");
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+
+    setTimeout(() => alertDiv.remove(), 3000);
+}
+
+function addToWishlist(productId) {
+    const csrfToken = getCsrfToken();
+
+    fetch("{% url 'MyAccount:toggle_wishlist_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("HTTP status " + res.status);
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (data.status === "added") {
+            showMessage("Added to wishlist", "success");
+        } else if (data.status === "removed") {
+            showMessage("Removed from wishlist", "info");
+        } else if (data.status === "login_required") {
+            showMessage("Please log in first", "error");
+        } else {
+            showMessage("Wishlist error: " + (data.message || ""), "error");
+        }
+    })
+    .catch(err => {
+        console.error("Wishlist error:", err);
+        showMessage("Network error occurred", "error");
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+/* static/css/process.css */
+.payment-processing {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-surface) 100%);
+  padding: clamp(var(--space-8), 5vw, var(--space-12));
+}
+
+.processing-card {
+  position: relative;
+  max-width: 420px;
+  width: 100%;
+  padding: clamp(var(--space-8), 4vw, var(--space-12));
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 
+    0 20px 40px oklch(from var(--color-text) l c h / 0.08),
+    0 1px 0 oklch(from var(--color-text) l c h / 0.04);
+  text-align: center;
+  overflow: hidden;
+}
+
+.security-badge {
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.375rem var(--space-4);
+  background: color-mix(in oklab, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 4px 12px oklch(from var(--color-success) l c h / 0.15);
+}
+
+.spinner-container {
+  position: relative;
+  margin: 2rem 0;
+  height: 80px;
+}
+
+.spinner {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border: 3px solid oklch(from var(--color-primary) l c h / 0.2);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 36px;
+  height: 36px;
+  background: var(--color-surface-2);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.1; }
+}
+
+.processing-text h2 {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.25rem, 2.5vw, var(--text-xl));
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.processing-text p {
+  margin: 0 0 var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+}
+
+.progress-bar {
+  height: 4px;
+  background: oklch(from var(--color-text) l c h / 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), color-mix(in oklab, var(--color-primary), var(--color-blue)));
+  border-radius: 2px;
+  animation: progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+.order-preview {
+  padding-top: var(--space-6);
+  border-top: 1px solid oklch(from var(--color-text) l c h / 0.08);
+}
+
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--text-sm);
+}
+
+.order-row span {
+  color: var(--color-text-muted);
+}
+
+.order-row strong {
+  font-size: var(--text-lg);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinner-overlay, .progress-fill {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

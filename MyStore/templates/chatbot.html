@@ -1,0 +1,46 @@
+<div class="chat-launcher" id="chatLauncher" title="Chat with ShopZone Assistant" aria-label="Open chat assistant">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+</div>
+
+<div class="chat-container" id="chatContainer" aria-hidden="true">
+    <div class="chat-header">
+        <div class="chat-header-text">
+            <strong>ShopZone Assistant</strong>
+            <span>Ask about products, orders, returns, or delivery.</span>
+        </div>
+        <button type="button" class="chat-close-btn" id="chatCloseBtn" aria-label="Close chat">
+            ×
+        </button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+            <div class="message-content">
+                Hi! I’m your ShopZone assistant. I can help with products, shipping, returns, payments, and your recent orders.
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-quick-start" id="chatQuickStart">
+        <button type="button" class="quick-btn" data-message="Shipping and delivery">Shipping</button>
+        <button type="button" class="quick-btn" data-message="Returns and refunds">Returns</button>
+        <button type="button" class="quick-btn" data-message="Payment methods">Payments</button>
+        <button type="button" class="quick-btn" data-message="Track my order">Track order</button>
+    </div>
+
+    <div class="chat-input-area">
+        <input
+            type="text"
+            id="chatInput"
+            class="chat-input"
+            placeholder="Type your question..."
+            autocomplete="off"
+            maxlength="500"
+        >
+        <button type="button" id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+            Send
+        </button>
+    </div>
+</div>

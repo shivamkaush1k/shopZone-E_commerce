@@ -1,0 +1,74 @@
+{% extends 'MyAccountBase.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <!-- Header -->
+            <div class="mb-5">
+                <h1>Terms of Service</h1>
+                {% if tos %}
+                <p class="text-muted">
+                    <small>
+                        Version {{ tos.version }} | 
+                        Effective Date: {{ tos.effective_date|date:"M d, Y" }}
+                    </small>
+                </p>
+                {% endif %}
+            </div>
+            
+            {% if tos %}
+            <!-- Content -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="tos-content">
+                        {{ tos.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agreement Section (if user not logged in or not agreed) -->
+            <div class="mt-5">
+                {% if user.is_authenticated %}
+                    {% if not user.tos_agreement %}
+                    <div class="alert alert-warning">
+                        <h5>You need to accept our Terms of Service</h5>
+                        <p>To continue using ShopZone, please read and accept our Terms of Service.</p>
+                        <form method="POST" action="{% url 'MyStore:accept_terms' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                I Accept Terms of Service
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        ✓ You accepted these terms on {{ user.tos_agreement.agreed_at|date:"M d, Y - g:i A" }}
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="alert alert-info">
+                    <p>Please <a href="{% url 'login:login' %}">login</a> or <a href="{% url 'login:signup' %}">sign up</a> to accept our Terms of Service.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Additional Links -->
+            <div class="mt-5 pt-4 border-top">
+                <p class="text-muted">
+                    Related pages: 
+                    <a href="{% url 'MyStore:privacy_policy' %}">Privacy Policy</a> • 
+                    <a href="{% url 'MyStore:return_policy' %}">Return Policy</a> • 
+                    <a href="{% url 'MyStore:faq' %}">FAQ</a>
+                </p>
+            </div>
+            
+            {% else %}
+            <div class="alert alert-warning">
+                No Terms of Service are currently available. Please contact support.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

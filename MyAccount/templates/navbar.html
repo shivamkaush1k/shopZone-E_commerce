@@ -1,0 +1,85 @@
+{% load static %}
+
+<header class="navbar">
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar__wrapper">
+                <!-- Logo -->
+                <a href="{% url 'MyAccount:home' %}" class="navbar__logo">
+                    <span class="navbar__logo-text">ShopZone</span>
+                </a>
+                
+                <!-- Search Bar -->
+                <div class="navbar__search-bar">
+                    <form method="get" action="{% url 'MyStore:product_list' %}">
+                        <input type="text" name="q" placeholder="Search products..." value="{{ search_query|default:'' }}">
+                        <button type="submit">
+                            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="navbar__links">
+                    <a href="{% url 'MyAccount:home' %}" class="navbar__link">Home</a>
+                    <a href="{% url 'MyStore:product_list' %}" class="navbar__link">Shop</a>
+                    
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'MyAccount:wishlist' %}" class="navbar__link">
+                            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748z"/>
+                            </svg>
+                            Wishlist
+                        </a>
+                        
+                        <a href="{% url 'MyStore:cart' %}" class="navbar__link navbar__link--cart">
+                            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            Cart
+                            <span class="navbar__cart-count">{{ cart_item_count|default:0 }}</span>
+                        </a>
+                        
+                        <div class="navbar__dropdown">
+                            <button class="navbar__dropdown-btn">
+                                {{ user.username }}
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                </svg>
+                            </button>
+                            <div class="navbar__dropdown-menu">
+                                <a href="{% url 'MyAccount:home' %}">Home</a>
+                                <a href="{% url 'MyAccount:profile' %}">Profile</a>
+                                <a href="{% url 'MyAccount:orders' %}">Orders</a>
+                                <a href="{% url 'MyAccount:addresses' %}">Addresses</a>
+                                <a href="{% url 'MyStore:my_returns' %}">Returns</a>
+                                <a href="{% url 'MyAccount:settings' %}">Settings</a>
+                                <hr>
+                                <a href="{% url 'login:logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login:login' %}" class="navbar__btn navbar__btn--outline">Login</a>
+                        <a href="{% url 'login:signup' %}" class="navbar__btn navbar__btn--primary">Sign Up</a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="navbar__mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+function toggleMobileMenu() {
+    const navLinks = document.querySelector('.navbar__links');
+    navLinks.classList.toggle('active');
+}
+</script>

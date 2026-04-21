@@ -1,0 +1,96 @@
+{% extends "MyAccountBase.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/addresses.css' %}">
+{% endblock %}
+{% block title %}My Addresses{% endblock %}
+
+
+
+{% block content %}
+<div class="container my-4 address-page">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+
+      <div class="d-flex justify-content-between align-items-center mb-4 section-header">
+        <h3 class="page-title mb-0">My Addresses</h3>
+        <a href="{% url 'MyAccount:add_address' %}" class="btn btn-primary">Add New Address</a>
+      </div>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if addresses %}
+        <div class="row">
+          {% for address in addresses %}
+            <div class="col-md-6 mb-3">
+              <div class="card shadow-sm h-100 address-list-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                    <div>
+                      <h5 class="card-title mb-1">{{ address.full_name }}</h5>
+                      <small class="text-muted">{{ address.get_address_type_display }}</small>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                      {% if address.is_default %}
+                        <span class="badge bg-success">Default</span>
+                      {% endif %}
+                      <span class="badge bg-secondary">{{ address.get_address_type_display }}</span>
+                    </div>
+                  </div>
+
+                  <p class="card-text mb-3 address-meta">
+                    {% if address.phone_number %}
+                      <strong>Phone:</strong> {{ address.phone_number }}<br>
+                    {% endif %}
+                    <strong>Address:</strong> {{ address.address_line_1 }}{% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}<br>
+                    <strong>City:</strong> {{ address.city }}, {{ address.state }} - {{ address.postal_code }}<br>
+                    <strong>Country:</strong> {{ address.country }}
+                  </p>
+
+                  <div class="address-actions">
+                    <a href="{% url 'MyAccount:edit_address' address.id %}" class="btn btn-sm btn-outline-primary">
+                      Edit
+                    </a>
+
+                    <form method="post" action="{% url 'MyAccount:delete_address' address.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-danger"
+                              onclick="return confirm('Delete this address?');">
+                        Delete
+                      </button>
+                    </form>
+
+                    {% if not address.is_default %}
+                      <form method="post" action="{% url 'MyAccount:set_default_address' address.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-success">
+                          Set Default
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info text-center">
+          <p class="mb-2">No addresses saved yet.</p>
+          <a href="{% url 'MyAccount:add_address' %}" class="btn btn-primary">Add Your First Address</a>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

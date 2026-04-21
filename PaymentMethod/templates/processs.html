@@ -1,0 +1,25 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Pay Securely - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/payment/process.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payment-processing-page">
+  <div class="payment-processing-card">
+    <div class="processing-spinner" aria-hidden="true"></div>
+    <h2 class="processing-title">Processing Secure Payment...</h2>
+    <p class="processing-text">Redirecting to Razorpay. Please wait.</p>
+  </div>
+</div>
+
+{{ razorpay_payload|json_script:"razorpay-payload" }}
+{% endblock %}
+
+{% block js %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{% static 'js/payment/process.js' %}"></script>
+{% endblock %}

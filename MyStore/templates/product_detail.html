@@ -1,0 +1,301 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="product-detail-page">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'MyAccount:home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'MyStore:product_list' %}">Products</a>
+            <span>/</span>
+            <a href="{% url 'MyStore:product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+            <span>/</span>
+            <span aria-current="page">{{ product.name }}</span>
+        </nav>
+
+        <div class="product-layout">
+            <section class="product-gallery">
+                <div class="product-gallery__main">
+                    {% if product.image %}
+                        <img id="mainImage" src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img id="mainImage" src="https://via.placeholder.com/700x700?text={{ product.name|truncatewords:3 }}" alt="{{ product.name }}">
+                    {% endif %}
+
+                    {% if product.is_featured %}
+                        <span class="product-flag product-flag--featured">Featured</span>
+                    {% endif %}
+
+                    {% if not product.is_active or product.stock == 0 %}
+                        <div class="product-gallery__overlay">
+                            <span>Currently Unavailable</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-gallery__thumbs">
+                    {% if product.image %}
+                        <button type="button" class="thumb is-active" data-image="{{ product.image.url }}">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        </button>
+                    {% endif %}
+
+                    {% if product.image2 %}
+                        <button type="button" class="thumb" data-image="{{ product.image2.url }}">
+                            <img src="{{ product.image2.url }}" alt="{{ product.name }}">
+                        </button>
+                    {% endif %}
+
+                    {% if product.image3 %}
+                        <button type="button" class="thumb" data-image="{{ product.image3.url }}">
+                            <img src="{{ product.image3.url }}" alt="{{ product.name }}">
+                        </button>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="product-summary">
+                <div class="product-summary__top">
+                    <div class="eyebrow-row">
+                        <span class="badge badge--soft">{{ product.category.name }}</span>
+                        {% if product.brand %}
+                            <span class="meta-pill">{{ product.brand }}</span>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="product-title">{{ product.name }}</h1>
+
+                    <div class="product-meta">
+                        {% if product.brand %}
+                            <p><span>Brand:</span> {{ product.brand }}</p>
+                        {% endif %}
+                        {% if product.sku %}
+                            <p><span>SKU:</span> {{ product.sku }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="product-price-card">
+                    {% if product.original_price > product.price %}
+                        <div class="price-meta">
+                            <span class="original-price">₹{{ product.original_price }}</span>
+                            <span class="discount-badge">{{ product.discount_percentage|floatformat:0 }}% OFF</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="price-row">
+                        <p class="current-price">₹{{ product.price }}</p>
+                    </div>
+
+                    {% if product.original_price > product.price %}
+                        <p class="savings-text">You save ₹{{ savings|floatformat:2 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="stock-box">
+                    {% if product.stock > 0 and product.is_active %}
+                        {% if product.stock < 10 %}
+                            <span class="stock stock--low">Only {{ product.stock }} left in stock</span>
+                        {% else %}
+                            <span class="stock stock--available">In stock · {{ product.stock }} available</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="stock stock--out">Out of stock</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-description-card">
+                    <h2>Description</h2>
+                    <p>{{ product.description }}</p>
+                </div>
+
+                {% if product.stock > 0 and product.is_active %}
+                    <form method="post" action="{% url 'MyStore:add_to_cart' product.id %}" class="purchase-card">
+                        {% csrf_token %}
+
+                        <div class="purchase-row">
+                            <label for="quantity" class="quantity-label">Quantity</label>
+
+                            <div class="quantity-selector">
+                                <button type="button" class="qty-btn" data-action="decrease" aria-label="Decrease quantity">−</button>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" readonly>
+                                <button type="button" class="qty-btn" data-action="increase" aria-label="Increase quantity">+</button>
+                            </div>
+                        </div>
+
+                        <div class="action-grid">
+                            <button type="submit" class="btn btn-primary btn-block">Add to Cart</button>
+
+                            <button
+                                type="button"
+                                id="wishlistBtn"
+                                class="btn btn-secondary btn-block {% if is_in_wishlist %}is-active{% endif %}"
+                                data-product-id="{{ product.id }}"
+                                aria-pressed="{% if is_in_wishlist %}true{% else %}false{% endif %}">
+                                <span class="wishlist-icon">❤</span>
+                                <span id="wishlistText">
+                                    {% if is_in_wishlist %}
+                                        Wishlisted
+                                    {% else %}
+                                        Add to Wishlist
+                                    {% endif %}
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="purchase-card purchase-card--disabled">
+                        <p>This product is currently unavailable.</p>
+                        <button type="button" class="btn btn-secondary" id="notifyBtn" data-product-id="{{ product.id }}">
+                            Notify Me
+                        </button>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+
+        {% if reviews %}
+        <section class="product-reviews">
+            <div class="section-heading">
+                <h2>Recent Reviews</h2>
+            </div>
+
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <article class="review-card">
+                        <div class="review-card__head">
+                            <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                            <span>{{ review.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <p>{{ review.comment }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const mainImage = document.getElementById("mainImage");
+    const thumbnails = document.querySelectorAll(".thumb");
+    const qtyInput = document.getElementById("quantity");
+    const wishlistBtn = document.getElementById("wishlistBtn");
+    const wishlistText = document.getElementById("wishlistText");
+    const notifyBtn = document.getElementById("notifyBtn");
+
+    function getCsrfToken() {
+        const tokenInput = document.querySelector("[name=csrfmiddlewaretoken]");
+        return tokenInput ? tokenInput.value : "";
+    }
+
+    function showMessage(message, type = "info") {
+        const existing = document.querySelector(".floating-alert");
+        if (existing) existing.remove();
+
+        const alert = document.createElement("div");
+        alert.className = `floating-alert floating-alert--${type}`;
+        alert.textContent = message;
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            alert.classList.add("is-visible");
+        }, 10);
+
+        setTimeout(() => {
+            alert.classList.remove("is-visible");
+            setTimeout(() => alert.remove(), 250);
+        }, 2800);
+    }
+
+    thumbnails.forEach((thumb) => {
+        thumb.addEventListener("click", function () {
+            const newImage = this.dataset.image;
+            if (mainImage && newImage) {
+                mainImage.src = newImage;
+            }
+
+            thumbnails.forEach((item) => item.classList.remove("is-active"));
+            this.classList.add("is-active");
+        });
+    });
+
+    document.querySelectorAll(".qty-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+            if (!qtyInput) return;
+
+            const action = this.dataset.action;
+            const current = parseInt(qtyInput.value || "1", 10);
+            const max = parseInt(qtyInput.max || "1", 10);
+
+            if (action === "increase" && current < max) {
+                qtyInput.value = current + 1;
+            }
+
+            if (action === "decrease" && current > 1) {
+                qtyInput.value = current - 1;
+            }
+        });
+    });
+
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener("click", function () {
+            const productId = this.dataset.productId;
+
+            fetch("{% url 'MyStore:toggle_wishlist_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-CSRFToken": getCsrfToken(),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: new URLSearchParams({ product_id: productId }),
+                credentials: "same-origin",
+                mode: "same-origin"
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Request failed with status " + response.status);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (data.status === "added") {
+                    wishlistBtn.classList.add("is-active");
+                    wishlistBtn.setAttribute("aria-pressed", "true");
+                    if (wishlistText) wishlistText.textContent = "Wishlisted";
+                    showMessage("Added to wishlist", "success");
+                } else if (data.status === "removed") {
+                    wishlistBtn.classList.remove("is-active");
+                    wishlistBtn.setAttribute("aria-pressed", "false");
+                    if (wishlistText) wishlistText.textContent = "Add to Wishlist";
+                    showMessage("Removed from wishlist", "info");
+                } else {
+                    showMessage(data.message || "Unable to update wishlist", "error");
+                }
+            })
+            .catch((error) => {
+                console.error("Wishlist error:", error);
+                showMessage("Something went wrong. Please try again.", "error");
+            });
+        });
+    }
+
+    if (notifyBtn) {
+        notifyBtn.addEventListener("click", function () {
+            showMessage("Notify me feature coming soon.", "info");
+        });
+    }
+});
+</script>
+{% endblock %}

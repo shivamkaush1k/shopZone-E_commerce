@@ -1,0 +1,105 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Payment - ShopZone{% endblock %}
+
+{% block content %}
+<div class="payment-page">
+    <div class="container">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h1>Complete Your Payment</h1>
+                <p>Order #{{ order.order_number }}</p>
+            </div>
+            
+            <div class="payment-details">
+                <div class="amount-section">
+                    <h2>Total Amount</h2>
+                    <div class="amount">₹{{ order.total_amount }}</div>
+                </div>
+                
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>₹{{ order.subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>₹{{ order.shipping_charge }}</span>
+                    </div>
+                    {% if order.tax %}
+                    <div class="summary-row">
+                        <span>Tax</span>
+                        <span>₹{{ order.tax }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>₹{{ order.total_amount }}</span>
+                    </div>
+                </div>
+                
+                <button id="rzp-button" class="btn btn-primary btn-lg btn-block">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    Pay Securely ₹{{ order.total_amount }}
+                </button>
+                
+                <div class="payment-methods">
+                    <p>Accepted Payment Methods:</p>
+                    <div class="methods-icons">
+                        <span>💳 Credit Card</span>
+                        <span>💳 Debit Card</span>
+                        <span>🏦 Net Banking</span>
+                        <span>📱 UPI</span>
+                        <span>👛 Wallets</span>
+                    </div>
+                </div>
+                
+                <div class="security-badge">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    Secured by Razorpay | SSL Encrypted
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('rzp-button').onclick = function(e) {
+    e.preventDefault();
+    
+    const options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ amount }}",
+        "currency": "{{ currency }}",
+        "name": "ShopZone",
+        "description": "Order #{{ order.order_number }}",
+        "order_id": "{{ payment_order.id }}",
+        "callback_url": "{{ callback_url }}",
+        "prefill": {
+            "name": "{{ user.get_full_name }}",
+            "email": "{{ user.email }}",
+            "contact": "{{ user.userprofile.phone }}"
+        },
+        "theme": {
+            "color": "#2563eb"
+        },
+        "modal": {
+            "ondismiss": function() {
+                alert('Payment cancelled. You can retry anytime.');
+            }
+        }
+    };
+    
+    const rzp = new Razorpay(options);
+    rzp.open();
+};
+</script>
+
+{% endblock %}

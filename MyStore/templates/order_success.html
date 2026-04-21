@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order Successful{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center">
+  <div class="card shadow-sm mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+      <h2 class="text-success mb-4">Thank you for your order!</h2>
+      <p class="lead mb-3">Your order <strong>#{{ order.id }}</strong> has been placed successfully.</p>
+      <p>We will notify you when your items are shipped.</p>
+
+      <hr>
+
+      <h5>Order Summary</h5>
+      <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+      <p><strong>Placed on:</strong> {{ order.created_at|date:"d M Y, H:i" }}</p>
+
+      <a href="{% url 'home' %}" class="btn btn-primary mt-4">Continue Shopping</a>
+      <a href="{% url 'myaccount:order_list' %}" class="btn btn-outline-secondary mt-4 ms-2">View My Orders</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

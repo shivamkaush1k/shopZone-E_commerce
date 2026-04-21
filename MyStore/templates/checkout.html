@@ -1,0 +1,127 @@
+{% extends "MyAccountBase.html" %}
+{% load static %}
+
+{% block content %}
+<section class="container checkout-page">
+    <header class="checkout-header">
+        <h1>Checkout</h1>
+    </header>
+
+    <div class="checkout-layout">
+
+        <aside class="order-summary">
+            <h2>Order Summary</h2>
+
+            <div class="order-items">
+                {% for item in cart_items %}
+                    <div class="order-item">
+                        <span class="item-name">
+                            {{ item.product.name }} × {{ item.quantity }}
+                        </span>
+                        <span class="item-price">
+                            ₹{{ item.get_total_price|floatformat:2 }}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p class="empty-cart">Your cart is empty.</p>
+                {% endfor %}
+            </div>
+
+            <div class="order-total">
+                <strong>Total: ₹{{ total_price|floatformat:2 }}</strong>
+            </div>
+        </aside>
+
+        <section class="shipping-form">
+            <h2>Shipping Details</h2>
+
+            <form method="post" action="">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        value="{{ request.POST.full_name|default:user_full_name }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ user_email }}"
+                        readonly
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        pattern="[0-9]{10}"
+                        maxlength="10"
+                        value="{{ request.POST.phone|default:user_phone }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="4"
+                        required
+                    >{{ request.POST.address|default:user_address }}</textarea>
+                </div>
+
+                <fieldset class="form-group payment-options">
+                    <legend>Payment Method</legend>
+
+                    <div class="payment-option">
+                        <input
+                            type="radio"
+                            id="cod"
+                            name="payment_method"
+                            value="cod"
+                            required
+                            {% if request.POST.payment_method == "cod" %}checked{% endif %}
+                        >
+                        <label for="cod">Cash on Delivery</label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input
+                            type="radio"
+                            id="online"
+                            name="payment_method"
+                            value="online"
+                            required
+                            {% if request.POST.payment_method == "online" %}checked{% endif %}
+                        >
+                        <label for="online">Online Payment</label>
+                    </div>
+                </fieldset>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    {% if not cart_items %}disabled{% endif %}
+                >
+                    Place Order
+                </button>
+            </form>
+        </section>
+
+    </div>
+</section>
+
+{% endblock %}

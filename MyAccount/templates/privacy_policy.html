@@ -1,0 +1,171 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="privacy-policy-container">
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="policy-header text-center mb-5">
+                    <h1 class="display-4 fw-bold mb-3">Privacy Policy</h1>
+                    <p class="lead text-muted mb-2">Effective: {{ last_updated }}</p>
+                    <p class="text-muted">{{ company_name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Policy Sections -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <!-- 1. Introduction -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">1. Introduction</h2>
+                    <div class="policy-content">
+                        <p>{{ company_name }} ("we", "us", "our") respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>shopzone.com</strong> or use our services.</p>
+                        <p>By using our services, you consent to the practices described in this policy.</p>
+                    </div>
+                </section>
+
+                <!-- 2. Information We Collect -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">2. Information We Collect</h2>
+                    <div class="policy-content">
+                        <h4 class="fw-bold mb-3">Personal Information:</h4>
+                        <ul class="mb-4">
+                            <li><strong>Account Information:</strong> Name, email, phone number</li>
+                            <li><strong>Shipping Details:</strong> Address, postal code</li>
+                            <li><strong>Payment Information:</strong> Card details (processed securely by gateway)</li>
+                            <li><strong>Order History:</strong> Products purchased, delivery status</li>
+                        </ul>
+                        
+                        <h4 class="fw-bold mb-3">Technical Information:</h4>
+                        <ul>
+                            <li>IP address, browser type, device information</li>
+                            <li>Cookies and usage analytics</li>
+                            <li>Pages visited, time spent on site</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 3. How We Use Information -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">3. How We Use Your Information</h2>
+                    <div class="policy-content">
+                        <ul>
+                            <li>Process and deliver your orders</li>
+                            <li>Manage your account and preferences</li>
+                            <li>Send order confirmations and updates</li>
+                            <li>Provide customer support</li>
+                            <li>Improve our website and services</li>
+                            <li>Send promotional offers (you can opt-out anytime)</li>
+                            <li>Prevent fraud and ensure security</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 4. Sharing Your Information -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">4. Sharing Your Information</h2>
+                    <div class="policy-content">
+                        <p>We <strong>DO NOT SELL</strong> your personal data. We share information only with:</p>
+                        <ul>
+                            <li><strong>Shipping Partners:</strong> For order delivery</li>
+                            <li><strong>Payment Gateways:</strong> For secure transactions</li>
+                            <li><strong>Service Providers:</strong> Email delivery, analytics (contractually bound)</li>
+                            <li><strong>Legal Authorities:</strong> When required by law</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 5. Data Security -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">5. Data Security</h2>
+                    <div class="policy-content">
+                        <ul>
+                            <li>All data transmitted via <strong>SSL/TLS encryption</strong></li>
+                            <li><strong>PCI DSS compliant</strong> payment processing</li>
+                            <li>Regular security audits and penetration testing</li>
+                            <li>Secure cloud hosting with DDoS protection</li>
+                            <li>Access controls and employee training</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 6. Your Rights -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">6. Your Rights</h2>
+                    <div class="policy-content">
+                        <p>You have the right to:</p>
+                        <ul>
+                            <li>Access your personal data anytime</li>
+                            <li>Request correction of inaccurate data</li>
+                            <li>Request deletion of your account and data</li>
+                            <li>Opt-out of marketing communications</li>
+                            <li>Download your data in portable format</li>
+                        </ul>
+                        
+                        <div class="row g-3 mt-4">
+                            <div class="col-md-6">
+                                <a href="{% url 'MyAccount:profile' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-user me-2"></i>Manage Account
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'MyAccount:settings' %}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-cog me-2"></i>Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. Cookies -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">7. Cookies</h2>
+                    <div class="policy-content">
+                        <p>We use cookies to enhance your experience:</p>
+                        <ul>
+                            <li><strong>Essential:</strong> Cart functionality, login sessions</li>
+                            <li><strong>Analytics:</strong> Website performance tracking</li>
+                            <li><strong>Marketing:</strong> Personalized ads (opt-out available)</li>
+                        </ul>
+                        <p>You can manage cookies through your browser settings.</p>
+                    </div>
+                </section>
+
+                <!-- 8. Contact -->
+                <section class="policy-section mb-5">
+                    <h2 class="h3 mb-4">8. Contact Us</h2>
+                    <div class="policy-content">
+                        <div class="contact-card p-4 border rounded">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h5><i class="fas fa-envelope text-primary me-2"></i>Email</h5>
+                                    <p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5><i class="fas fa-phone text-primary me-2"></i>Phone</h5>
+                                    <p>{{ support_phone }}</p>
+                                </div>
+                            </div>
+                            <a href="{% url 'MyAccount:contact' %}" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Send Privacy Inquiry
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <div class="policy-footer text-center border-top pt-4 mt-5">
+                    <p class="mb-2">&copy; {{ last_updated|date:"Y" }} {{ company_name }}. All rights reserved.</p>
+                    <p class="text-muted small">Reg. No: {{ registration_number }} | {{ address }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+  "python.linting.pylintEnabled": false,
+  "python.linting.enabled": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "python.linting.pylintPath": "pylint",
+  "django.pythonPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python"
+  }
+}

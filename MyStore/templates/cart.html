@@ -1,0 +1,132 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}?v=3">
+{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+    <div class="container">
+        <div class="cart-header">
+            <h1 class="cart-title">Shopping Cart</h1>
+            <p class="cart-subtitle">Review your items and update quantities before checkout.</p>
+        </div>
+
+        {% if cart_items %}
+        <div class="cart-table-wrap">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr data-item-id="{{ item.id }}">
+                        <td data-label="Product">{{ item.product.name }}</td>
+                        <td data-label="Price">₹{{ item.product.price }}</td>
+                        <td data-label="Quantity">
+                            <input
+                                type="number"
+                                value="{{ item.quantity }}"
+                                min="1"
+                                data-item-id="{{ item.id }}"
+                                class="quantity-input"
+                            >
+                        </td>
+                        <td data-label="Total" class="item-total">₹{{ item.get_total_price }}</td>
+                        <td data-label="Action">
+                            <a href="{% url 'MyStore:remove_from_cart' item.id %}" class="btn-remove">Remove</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cart-summary">
+            <h3>Cart Total: ₹<span id="cart-total">{{ total_price }}</span></h3>
+            <a href="{% url 'MyStore:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+        </div>
+        {% else %}
+        <div class="cart-empty">
+            <p>Your cart is empty.</p>
+            <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function () {
+            const itemId = this.getAttribute('data-item-id');
+            const newQuantity = this.value;
+
+            fetch("{% url 'MyStore:update_cart_quantity' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
+                    if (row) {
+                        const totalCell = row.querySelector('.item-total');
+                        if (totalCell) {
+                            totalCell.textContent = '₹' + data.item_total;
+                        }
+                    }
+
+                    const cartTotal = document.getElementById('cart-total');
+                    if (cartTotal) {
+                        cartTotal.textContent = data.cart_total;
+                    }
+                } else {
+                    alert(data.error || 'Error updating quantity');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating cart');
+            });
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

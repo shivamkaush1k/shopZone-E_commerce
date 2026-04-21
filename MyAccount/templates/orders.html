@@ -1,0 +1,117 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}My Orders - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+{% block content %}
+<div class="orders-page">
+    <div class="container">
+        <div class="orders-page__header">
+            <h1 class="orders-page__title">My Orders</h1>
+            <hr class="orders-page__divider">
+        </div>
+
+        <!-- DEBUG INFO (Remove after testing) -->
+        <div class="orders-page__debug">
+            <strong>🔍 Debug Info:</strong><br>
+            Total Orders: <strong>{{ total_orders }}</strong><br>
+            Current Page: <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong><br>
+            Logged In User: <strong>{{ request.user }}</strong>
+        </div>
+
+        {% if orders %}
+            <div class="orders-page__table-wrapper">
+                <table class="orders-page__table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Items</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><span class="orders-page__order-id">#{{ order.id }}</span></td>
+                            <td>{{ order.created_at|date:"d M, Y" }}</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="orders-page__badge orders-page__badge--pending">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                    <span class="orders-page__badge orders-page__badge--confirmed">Confirmed</span>
+                                {% elif order.status == 'shipped' %}
+                                    <span class="orders-page__badge orders-page__badge--shipped">Shipped</span>
+                                {% elif order.status == 'delivered' %}
+                                    <span class="orders-page__badge orders-page__badge--delivered">Delivered</span>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="orders-page__badge orders-page__badge--cancelled">Cancelled</span>
+                                {% else %}
+                                    <span class="orders-page__badge">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="orders-page__total-amount">₹{{ order.total_amount }}</span></td>
+                            <td>{{ order.items.all|length }}</td>
+                            <td>
+                                <a href="{% url 'MyAccount:order_detail' order.id %}" class="orders-page__btn">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="orders-page__pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="orders-page__pagination-item">
+                            <a class="orders-page__pagination-link" href="?page=1">First</a>
+                        </li>
+                        <li class="orders-page__pagination-item">
+                            <a class="orders-page__pagination-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="orders-page__pagination-item active">
+                                <span class="orders-page__pagination-span">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="orders-page__pagination-item">
+                                <a class="orders-page__pagination-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="orders-page__pagination-item">
+                            <a class="orders-page__pagination-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="orders-page__pagination-item">
+                            <a class="orders-page__pagination-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+        {% else %}
+            <div class="orders-page__empty" role="alert">
+                <h4>📦 No Orders Found</h4>
+                <p>You haven't placed any orders yet.</p>
+                <a href="{% url 'MyStore:product_list' %}" class="orders-page__empty-btn">Start Shopping</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

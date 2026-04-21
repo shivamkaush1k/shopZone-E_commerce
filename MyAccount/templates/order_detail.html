@@ -1,0 +1,95 @@
+{% extends "MyAccountBase.html" %}
+{% load static %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/order_details.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="order-detail">
+    <div class="container">
+        <!-- Order Header -->
+        <div class="order-detail__header">
+            <h3 class="order-detail__title">Order Details</h3>
+            <div class="order-detail__id">#{{ order.id }}</div>
+        </div>
+
+        <!-- Order Info -->
+        <div class="order-detail__card">
+            <div class="order-detail__card-header">Order Information</div>
+            <div class="order-detail__card-body">
+                <div class="order-detail__info-row">
+                    <span class="order-detail__info-label">Order Date:</span>
+                    <span class="order-detail__info-value">{{ order.created_at|date:"d M Y, H:i" }}</span>
+                </div>
+                <div class="order-detail__info-row">
+                    <span class="order-detail__info-label">Status:</span>
+                    <span class="order-detail__status-badge 
+                        {% if order.status == 'pending' %}order-detail__status-badge--pending
+                        {% elif order.status == 'confirmed' %}order-detail__status-badge--confirmed
+                        {% elif order.status == 'shipped' %}order-detail__status-badge--shipped
+                        {% elif order.status == 'delivered' %}order-detail__status-badge--delivered
+                        {% elif order.status == 'cancelled' %}order-detail__status-badge--cancelled
+                        {% endif %}">
+                        {{ order.status|title }}
+                    </span>
+                </div>
+                <div class="order-detail__info-row">
+                    <span class="order-detail__info-label">Total Amount:</span>
+                    <span class="order-detail__total">₹{{ order.total_amount|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="order-detail__card">
+            <div class="order-detail__card-header">Shipping Address</div>
+            <div class="order-detail__card-body">
+                <div class="order-detail__address-line"><strong>{{ order.full_name }}</strong></div>
+                <div class="order-detail__address-line">{{ order.address }}</div>
+                <div class="order-detail__address-line">{{ order.city }}, {{ order.state }} - {{ order.pincode }}</div>
+                <div class="order-detail__address-line order-detail__phone">Phone: {{ order.phone }}</div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="order-detail__card">
+            <div class="order-detail__card-header">Order Items ({{ order.items.all|length }})</div>
+            <div class="order-detail__card-body">
+                <table class="order-detail__items-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td class="order-detail__product-name">{{ item.product_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="order-detail__price">₹{{ item.price|floatformat:2 }}</td>
+                            <td class="order-detail__subtotal">₹{{ item.get_total_price|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="order-detail__actions">
+            <a href="{% url 'MyAccount:orders' %}" class="order-detail__back-btn">
+                <svg class="order-detail__back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Back to Orders
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

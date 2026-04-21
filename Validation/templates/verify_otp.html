@@ -1,0 +1,52 @@
+{% extends 'MyAccountBase.html' %}
+{% block title %}Verify OTP - ShopZone{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>Verify OTP</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label">OTP</label>
+                            <div class="d-flex justify-content-center otp-inputs" id="otp">
+                                {% for i in "123456"|make_list %}
+                                    <input type="text" name="otp_digit_{{ i }}" class="form-control mx-1 text-center otp-digit" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Verify OTP</button>
+                        <p class="mt-3 text-center">
+                            <a href="{% url 'validation:send_phone_otp' %}" class="text-primary">Resend OTP</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.otp-digit');
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', function() {
+            if (this.value.length > 1) this.value = this.value.slice(0,1);
+            if (this.value && index < inputs.length - 1) inputs[index + 1].focus();
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !this.value && index > 0) inputs[index - 1].focus();
+        });
+    });
+    inputs[0].focus();
+});
+</script>
+{% endblock %}

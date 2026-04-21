@@ -1,0 +1,212 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Request a Return{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/returns.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5 return-page">
+    <h1 class="mb-4">Request a Return</h1>
+
+    <div class="row">
+        <!-- ================= FORM ================= -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'MyStore:request_return' %}" id="returnForm">
+                        {% csrf_token %}
+
+                        <!-- ===== ORDER ===== -->
+                        <div class="mb-3">
+                            <label for="order_id" class="form-label">
+                                Select Order <span class="text-danger">*</span>
+                            </label>
+
+                            <select name="order_id" id="order_id" class="form-select" required>
+                                <option value="">-- Choose an order --</option>
+
+                                {% for order in orders %}
+                                <option 
+                                    value="{{ order.id }}"
+                                    data-product="{% for item in order.items.all %}{{ item.product.name|escape }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                >
+                                    Order #{{ order.order_number }} - ₹{{ order.total_amount }} ({{ order.created_at|date:"M d, Y" }})
+                                </option>
+                                {% endfor %}
+                            </select>
+
+                            {% if not orders %}
+                            <small class="text-muted">
+                                No eligible orders found. Only delivered/confirmed orders can be returned.
+                            </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== PRODUCT NAME ===== -->
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">
+                                Product Name <span class="text-danger">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="product_name"
+                                id="product_name"
+                                class="form-control"
+                                placeholder="Enter product name"
+                                required
+                            >
+
+                            <small class="form-text text-muted" id="productHelp">
+                                This will auto-fill when you select an order.
+                            </small>
+                        </div>
+
+                        <!-- ===== REASON ===== -->
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">
+                                Reason for Return <span class="text-danger">*</span>
+                            </label>
+
+                            <select name="reason" id="reason" class="form-select" required>
+                                <option value="">-- Select reason --</option>
+                                <option value="defective">Defective/Damaged</option>
+                                <option value="wrong_item">Wrong Item Received</option>
+                                <option value="not_as_described">Not As Described</option>
+                                <option value="changed_mind">Changed Mind</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- ===== DESCRIPTION ===== -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label" id="descriptionLabel">
+                                Description <span class="text-danger">*</span>
+                            </label>
+
+                            <textarea
+                                name="description"
+                                id="description"
+                                class="form-control"
+                                rows="5"
+                                placeholder="Describe the issue (minimum 20 characters)"
+                                required
+                            ></textarea>
+
+                            <small class="form-text text-muted d-block mt-2" id="descriptionHelp">
+                                Minimum 20 characters required for better support.
+                            </small>
+                        </div>
+
+                        <!-- ===== BUTTONS ===== -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Submit Return Request
+                            </button>
+
+                            <a href="{% url 'MyStore:product_list' %}" class="btn btn-outline-secondary">
+                                Back to Shopping
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SIDEBAR ================= -->
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Return Guidelines</h5>
+                    <ul class="guideline-list">
+                        <li>Return window: 30 days from delivery</li>
+                        <li>Product must be in original condition</li>
+                        <li>Include all original packaging</li>
+                        <li>Keep tracking number safe</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const orderSelect = document.getElementById('order_id');
+    const productInput = document.getElementById('product_name');
+    const productHelp = document.getElementById('productHelp');
+
+    const reasonSelect = document.getElementById('reason');
+    const descriptionField = document.getElementById('description');
+    const descriptionLabel = document.getElementById('descriptionLabel');
+    const descriptionHelp = document.getElementById('descriptionHelp');
+
+    /* ================= AUTO PRODUCT ================= */
+    function updateProductName() {
+        const selectedOption = orderSelect.options[orderSelect.selectedIndex];
+
+        if (!selectedOption) return;
+
+        const productName = selectedOption.getAttribute("data-product");
+
+        if (productName && productName.trim() !== "") {
+            productInput.value = productName;
+            productInput.readOnly = true;
+            productInput.classList.add('is-autofilled');
+            productHelp.textContent = 'Product auto-filled from selected order.';
+        } else {
+            productInput.value = '';
+            productInput.readOnly = false;
+            productInput.classList.remove('is-autofilled');
+            productHelp.textContent = 'This will auto-fill when you select an order.';
+        }
+    }
+
+    /* ================= REASON UI ================= */
+    function updateReasonUI() {
+        const isOther = reasonSelect.value === 'other';
+
+        if (isOther) {
+            descriptionLabel.innerHTML = 'Describe the Reason <span class="text-danger">*</span>';
+            descriptionField.placeholder = 'Please describe your exact reason for return';
+            descriptionHelp.textContent = 'Since you selected "Other", clearly describe the reason.';
+            descriptionField.focus();
+        } else {
+            descriptionLabel.innerHTML = 'Description <span class="text-danger">*</span>';
+            descriptionField.placeholder = 'Describe the issue (minimum 20 characters)';
+            descriptionHelp.textContent = 'Minimum 20 characters required for better support.';
+        }
+    }
+
+    /* ================= EVENTS ================= */
+    if (orderSelect) {
+        orderSelect.addEventListener('change', updateProductName);
+        updateProductName();
+    }
+
+    if (reasonSelect) {
+        reasonSelect.addEventListener('change', updateReasonUI);
+        updateReasonUI();
+    }
+
+});
+</script>
+
+{% endblock %}

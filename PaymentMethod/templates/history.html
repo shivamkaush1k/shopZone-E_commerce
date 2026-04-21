@@ -1,0 +1,183 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block title %}Payment History - ShopZone{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/payment/history.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payment-history-page">
+  <div class="payment-history-container">
+    <header class="payment-history-header">
+      <h1 class="payment-history-title">Payment History</h1>
+      <p class="payment-history-subtitle">
+        View and manage all your payment records in one place.
+      </p>
+    </header>
+
+    {% if payments %}
+    <section class="payment-history-filters-card">
+      <div class="payment-history-card-body">
+        <form method="get" class="payment-history-filters-form">
+          <div class="filter-field">
+            <label for="status" class="filter-label">Filter by Status</label>
+            <select name="status" id="status" class="filter-select">
+              <option value="" {% if not request.GET.status %}selected{% endif %}>All Statuses</option>
+              <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+              <option value="refunded" {% if request.GET.status == 'refunded' %}selected{% endif %}>Refunded</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label for="method" class="filter-label">Filter by Method</label>
+            <select name="method" id="method" class="filter-select">
+              <option value="" {% if not request.GET.method %}selected{% endif %}>All Methods</option>
+              <option value="card" {% if request.GET.method == 'card' %}selected{% endif %}>Credit Card</option>
+              <option value="upi" {% if request.GET.method == 'upi' %}selected{% endif %}>UPI</option>
+              <option value="net_banking" {% if request.GET.method == 'net_banking' %}selected{% endif %}>Net Banking</option>
+              <option value="wallet" {% if request.GET.method == 'wallet' %}selected{% endif %}>Wallet</option>
+            </select>
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'PaymentMethod:payment_history' %}" class="btn btn-outline-secondary">Reset</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="payment-history-table-card">
+      <div class="payment-history-table-wrapper">
+        <table class="payment-history-table">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Order</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for payment in payments %}
+            <tr>
+              <td>
+                <code class="payment-code">
+                  {% if payment.transaction_id %}
+                    {{ payment.transaction_id|truncatechars:18 }}
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </code>
+              </td>
+
+              <td>
+                <a href="{% url 'MyAccount:order_detail' payment.order.id %}" class="payment-order-link">
+                  #{{ payment.order.order_number|default:payment.order.id }}
+                </a>
+              </td>
+
+              <td>
+                <strong class="payment-amount">₹{{ payment.amount }}</strong>
+              </td>
+
+              <td>
+                <span class="payment-method-badge">
+                  {{ payment.get_payment_method_display }}
+                </span>
+              </td>
+
+              <td>
+                <span class="payment-status-badge
+                  {% if payment.status == 'completed' %} payment-status-badge--success{% endif %}
+                  {% if payment.status == 'pending' %} payment-status-badge--warning{% endif %}
+                  {% if payment.status == 'failed' %} payment-status-badge--danger{% endif %}
+                  {% if payment.status == 'refunded' %} payment-status-badge--secondary{% endif %}">
+                  {{ payment.get_status_display }}
+                </span>
+              </td>
+
+              <td>
+                <div class="payment-date">
+                  <span>{{ payment.created_at|date:"M d, Y" }}</span>
+                  <span>{{ payment.created_at|time:"g:i A" }}</span>
+                </div>
+              </td>
+
+              <td>
+                <div class="payment-table-actions">
+                  {% if payment.status == 'completed' %}
+                  <a href="{% url 'PaymentMethod:payment_receipt' payment.id %}" class="btn btn-sm btn-outline-primary">
+                    Receipt
+                  </a>
+                  {% else %}
+                  <a href="{% url 'PaymentMethod:payment_failed' %}?payment_id={{ payment.id }}" class="btn btn-sm btn-outline-secondary">
+                    Details
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {% if is_paginated %}
+    <nav class="payment-pagination" aria-label="Payment history pagination">
+      <div class="payment-pagination-inner">
+        {% if page_obj.has_previous %}
+        <a class="btn btn-outline-secondary" href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.method %}&method={{ request.GET.method }}{% endif %}">
+          First
+        </a>
+        <a class="btn btn-outline-secondary" href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.method %}&method={{ request.GET.method }}{% endif %}">
+          Previous
+        </a>
+        {% endif %}
+
+        <span class="payment-pagination-status">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a class="btn btn-outline-secondary" href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.method %}&method={{ request.GET.method }}{% endif %}">
+          Next
+        </a>
+        <a class="btn btn-outline-secondary" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.method %}&method={{ request.GET.method }}{% endif %}">
+          Last
+        </a>
+        {% endif %}
+      </div>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <section class="payment-history-empty">
+      <div class="payment-history-empty-card">
+        <div class="empty-icon">
+          <i class="fas fa-receipt" aria-hidden="true"></i>
+        </div>
+        <h2>No Payment History</h2>
+        <p>You have not made any payments yet.</p>
+        <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">
+          Start Shopping
+        </a>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/history.js' %}"></script>
+{% endblock %}

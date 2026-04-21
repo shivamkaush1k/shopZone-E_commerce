@@ -1,0 +1,191 @@
+{% extends 'MyAccountBase.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/returns.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="returns-page">
+  <div class="returns-container">
+    <div class="page-header">
+      <h1 class="page-title">Return Status</h1>
+      <p class="page-subtitle">Track the progress of your return request and review the submitted details.</p>
+    </div>
+
+    <div class="returns-layout">
+      <div class="returns-main">
+        <div class="returns-card">
+          <div class="returns-card-body">
+
+            <section class="section-block">
+              <div class="section-head">
+                <h2 class="section-title">Request Status</h2>
+              </div>
+
+              <div class="status-banner">
+                <div>
+                  <p class="status-label">Current Status</p>
+                  <h3 class="status-title">{{ return_request.get_status_display }}</h3>
+                </div>
+
+                <span class="status-badge
+                  {% if return_request.status == 'pending' %}status-warning
+                  {% elif return_request.status == 'approved' %}status-info
+                  {% elif return_request.status == 'rejected' %}status-danger
+                  {% elif return_request.status == 'refunded' %}status-success
+                  {% elif return_request.status == 'received' %}status-success
+                  {% elif return_request.status == 'shipped_back' %}status-info
+                  {% endif %}">
+                  {{ return_request.get_status_display }}
+                </span>
+              </div>
+            </section>
+
+            <section class="section-block">
+              <div class="section-head">
+                <h2 class="section-title">Request Details</h2>
+              </div>
+
+              <div class="details-table-wrap">
+                <table class="details-table">
+                  <tbody>
+                    <tr>
+                      <td>Return ID</td>
+                      <td>#{{ return_request.id }}</td>
+                    </tr>
+                    <tr>
+                      <td>Order ID</td>
+                      <td>#{{ return_request.order_id }}</td>
+                    </tr>
+                    <tr>
+                      <td>Product</td>
+                      <td>{{ return_request.product_name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Reason</td>
+                      <td>{{ return_request.get_reason_display }}</td>
+                    </tr>
+                    <tr>
+                      <td>Requested On</td>
+                      <td>{{ return_request.requested_at|date:"M d, Y - g:i A" }}</td>
+                    </tr>
+                    <tr>
+                      <td>Last Updated</td>
+                      <td>{{ return_request.updated_at|date:"M d, Y - g:i A" }}</td>
+                    </tr>
+                    {% if return_request.refund_amount %}
+                    <tr>
+                      <td>Refund Amount</td>
+                      <td class="refund-amount">₹{{ return_request.refund_amount }}</td>
+                    </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="section-block">
+              <div class="section-head">
+                <h2 class="section-title">Description</h2>
+              </div>
+
+              <div class="description-box">
+                {{ return_request.description|linebreaks }}
+              </div>
+            </section>
+
+            <section class="section-block">
+              {% if return_request.status == 'pending' %}
+              <div class="info-alert alert-warning">
+                <strong>Status: Pending Review</strong>
+                <p>Your return request is being reviewed by our team. You will receive an update soon.</p>
+              </div>
+              {% elif return_request.status == 'approved' %}
+              <div class="info-alert alert-info">
+                <strong>Status: Approved</strong>
+                <p>Your return has been approved. Please follow the return shipping instructions shared with you.</p>
+              </div>
+              {% elif return_request.status == 'rejected' %}
+              <div class="info-alert alert-danger">
+                <strong>Status: Rejected</strong>
+                <p>Your request was not approved. If needed, please contact support for more information.</p>
+              </div>
+              {% elif return_request.status == 'refunded' %}
+              <div class="info-alert alert-success">
+                <strong>Status: Refunded</strong>
+                <p>Your refund has been processed successfully. The amount should reflect in your account shortly.</p>
+              </div>
+              {% elif return_request.status == 'received' %}
+              <div class="info-alert alert-success">
+                <strong>Status: Item Received</strong>
+                <p>We have received your returned item and the refund is being finalized.</p>
+              </div>
+              {% elif return_request.status == 'shipped_back' %}
+              <div class="info-alert alert-info">
+                <strong>Status: Shipped Back</strong>
+                <p>Your item is on the way back to us. We will update the request once it is received.</p>
+              </div>
+              {% endif %}
+            </section>
+
+            <div class="actions-row">
+              <a href="{% url 'MyStore:my_returns' %}" class="btn btn-outline">Back to Returns</a>
+              <a href="{% url 'MyStore:return_policy' %}" class="btn btn-primary">View Return Policy</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="returns-sidebar">
+        <div class="returns-card sidebar-card">
+          <div class="returns-card-body">
+            <h2 class="section-title">What’s Next?</h2>
+
+            <div class="return-timeline">
+              <div class="timeline-item completed">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <p>1. Submitted</p>
+                </div>
+              </div>
+
+              <div class="timeline-item
+                {% if return_request.status == 'approved' or return_request.status == 'shipped_back' or return_request.status == 'received' or return_request.status == 'refunded' or return_request.status == 'rejected' %}completed{% endif %}">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <p>2. Reviewed</p>
+                </div>
+              </div>
+
+              <div class="timeline-item
+                {% if return_request.status == 'shipped_back' or return_request.status == 'received' or return_request.status == 'refunded' %}completed{% endif %}">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <p>3. Shipped Back</p>
+                </div>
+              </div>
+
+              <div class="timeline-item
+                {% if return_request.status == 'received' or return_request.status == 'refunded' %}completed{% endif %}">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <p>4. Received</p>
+                </div>
+              </div>
+
+              <div class="timeline-item
+                {% if return_request.status == 'refunded' %}completed{% endif %}">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <p>5. Refunded</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

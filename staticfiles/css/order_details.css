@@ -1,0 +1,242 @@
+/* =========================================
+   ORDER DETAIL PAGE - SHOPZONE UI
+   ========================================= */
+
+/* ===== ROOT ===== */
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+
+  --text-dark: #0f172a;
+  --text-light: #64748b;
+
+  --border: #e2e8f0;
+
+  --radius: 12px;
+}
+
+/* ===== PAGE ===== */
+.order-detail {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 30px 0;
+}
+
+/* ===== HEADER ===== */
+.order-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.order-detail__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.order-detail__id {
+  font-size: 14px;
+  background: var(--primary);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* =========================================
+   CARD
+   ========================================= */
+.order-detail__card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.order-detail__card-header {
+  background: #f1f5f9;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border);
+}
+
+.order-detail__card-body {
+  padding: 16px;
+}
+
+/* =========================================
+   INFO
+   ========================================= */
+.order-detail__info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.order-detail__info-label {
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.order-detail__info-value {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.order-detail__total {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ===== STATUS BADGE ===== */
+.order-detail__status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Status Colors */
+.order-detail__status-badge--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.order-detail__status-badge--confirmed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.order-detail__status-badge--shipped {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.order-detail__status-badge--delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.order-detail__status-badge--cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* =========================================
+   ADDRESS
+   ========================================= */
+.order-detail__address-line {
+  margin-bottom: 6px;
+  color: var(--text-dark);
+}
+
+.order-detail__phone {
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* =========================================
+   TABLE
+   ========================================= */
+.order-detail__items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-detail__items-table th,
+.order-detail__items-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.order-detail__items-table th {
+  background: #f1f5f9;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.order-detail__items-table tr:hover {
+  background: #f9fafb;
+}
+
+/* Product */
+.order-detail__product-name {
+  font-weight: 500;
+}
+
+/* Prices */
+.order-detail__price {
+  color: var(--text-dark);
+}
+
+.order-detail__subtotal {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* =========================================
+   ACTIONS
+   ========================================= */
+.order-detail__actions {
+  margin-top: 20px;
+}
+
+.order-detail__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--text-dark);
+  transition: 0.2s;
+}
+
+.order-detail__back-btn:hover {
+  background: #f1f5f9;
+}
+
+/* Icon */
+.order-detail__back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  .order-detail__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-detail__title {
+    font-size: 22px;
+  }
+
+  .order-detail__items-table th,
+  .order-detail__items-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 500px) {
+  .order-detail {
+    padding: 20px 10px;
+  }
+
+  .order-detail__items-table {
+    min-width: 600px;
+  }
+}
