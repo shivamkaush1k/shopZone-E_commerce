@@ -3,10 +3,14 @@ Django settings for e_commerce project.
 """
 import os
 from pathlib import Path
+from urllib.parse import parse_qsl, unquote, urlparse
 from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 from decouple import config
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # ==================== CORE SETTINGS ====================
@@ -17,6 +21,7 @@ ALLOWED_HOSTS = [host.strip() for host in config(
     default="127.0.0.1,localhost,shopzone-e-commerce.onrender.com"
 ).split(",") if host.strip()]
 
+
 # ==================== APPLICATIONS ====================
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,8 +31,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+
     "import_export",
     "razorpay",
+
 
     "MyAccount",
     "MyStore",
@@ -35,6 +42,7 @@ INSTALLED_APPS = [
     "Validation",
     "login",
 ]
+
 
 
 MIDDLEWARE = [
@@ -48,7 +56,9 @@ MIDDLEWARE = [
 ]
 
 
+
 ROOT_URLCONF = "e_commerce.urls"
+
 
 
 TEMPLATES = [
@@ -69,24 +79,128 @@ TEMPLATES = [
 ]
 
 
+
 WSGI_APPLICATION = "e_commerce.wsgi.application"
 
 
+
 # ==================== DATABASE ====================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": config("DB_NAME", default="ecommerce_db"),
-        "USER": config("DB_USER", default="root"),
-        "PASSWORD": config("DB_PASSWORD", default=""),
-        "HOST": config("DB_HOST", default="localhost"),
-        "PORT": config("DB_PORT", default="3306"),
-        "OPTIONS": {
+def _database_config_from_url(database_url: str) -> dict:
+    parsed = urlparse(database_url)
+    engine = {
+        "postgres": "django.db.backends.postgresql",
+        "postgresql": "django.db.backends.postgresql",
+        "pgsql": "django.db.backends.postgresql",
+        "mysql": "django.db.backends.mysql",
+        "mysql2": "django.db.backends.mysql",
+        "sqlite": "django.db.backends.sqlite3",
+        "sqlite3": "django.db.backends.sqlite3",
+    }.get(parsed.scheme.lower())
+
+
+    if not engine:
+        raise ImproperlyConfigured(
+            "Unsupported DATABASE_URL scheme. Use postgres://, postgresql://, mysql://, or sqlite:///."
+        )
+
+
+    if engine == "django.db.backends.sqlite3":
+        db_path = unquote(parsed.path.lstrip("/")) or "db.sqlite3"
+        return {
+            "ENGINE": engine,
+            "NAME": str(BASE_DIR / db_path),
+        }
+
+
+    db_config = {
+        "ENGINE": engine,
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or ""),
+    }
+
+
+    query_options = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    if engine == "django.db.backends.mysql":
+        db_config["OPTIONS"] = {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
             "charset": "utf8mb4",
-        },
+            "ssl": {
+                "ca": str(BASE_DIR / "certs" / "aiven-ca.pem"),
+            },
+        }
+    elif query_options:
+        db_config["OPTIONS"] = query_options
+
+
+    return db_config
+
+
+
+def _database_config_from_env() -> dict:
+    db_engine = config("DB_ENGINE", default="mysql").lower()
+    engine = {
+        "mysql": "django.db.backends.mysql",
+        "postgres": "django.db.backends.postgresql",
+        "postgresql": "django.db.backends.postgresql",
+        "sqlite": "django.db.backends.sqlite3",
+        "sqlite3": "django.db.backends.sqlite3",
+    }.get(db_engine)
+
+
+    if not engine:
+        raise ImproperlyConfigured(
+            "Unsupported DB_ENGINE value. Use mysql, postgres, postgresql, sqlite, or sqlite3."
+        )
+
+
+    if engine == "django.db.backends.sqlite3":
+        return {
+            "ENGINE": engine,
+            "NAME": config("DB_NAME", default=str(BASE_DIR / "db.sqlite3")),
+        }
+
+
+    db_host = config("DB_HOST", default="localhost").strip()
+    if not DEBUG and db_host in {"", "localhost", "127.0.0.1"}:
+        raise ImproperlyConfigured(
+            "Production database is not configured. Set DATABASE_URL or remote DB_* values on Render."
+        )
+
+
+    db_config = {
+        "ENGINE": engine,
+        "NAME": config("DB_NAME", default="defaultdb"),  # ← changed to defaultdb
+        "USER": config("DB_USER", default="avnadmin"),   # ← set to avnadmin
+        "PASSWORD": config("DB_PASSWORD", default=""),
+        "HOST": db_host,
+        "PORT": config("DB_PORT", default="17573"),     # ← set to Aiven port
     }
+
+
+    if engine == "django.db.backends.mysql":
+        db_config["OPTIONS"] = {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            "charset": "utf8mb4",
+            "ssl": {
+                "ca": str(BASE_DIR / "certs" / "aiven-ca.pem"),
+            },
+        }
+
+
+    return db_config
+
+
+
+DATABASE_URL = config("DATABASE_URL", default="").strip()
+DATABASES = {
+    "default": _database_config_from_url(DATABASE_URL)
+    if DATABASE_URL
+    else _database_config_from_env()
 }
+
 
 
 # ==================== AUTH ====================
@@ -95,9 +209,11 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+
 LOGIN_URL = "login:login"
 LOGIN_REDIRECT_URL = "MyAccount:dashboard"
 LOGOUT_REDIRECT_URL = "login:home"
+
 
 
 # ==================== PASSWORD VALIDATION ====================
@@ -109,6 +225,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # ==================== INTERNATIONALIZATION ====================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
@@ -116,15 +233,19 @@ USE_I18N = True
 USE_TZ = True
 
 
+
 # ==================== STATIC & MEDIA ====================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 
 # ==================== EMAIL ====================
@@ -144,10 +265,12 @@ CONTACT_RECEIVER_EMAIL = config(
 )
 
 
+
 # ==================== SMS ====================
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID", default="")
 TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN", default="")
 TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER", default="")
+
 
 
 # ==================== SESSION ====================
@@ -156,13 +279,16 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
+
 # ==================== PASSWORD RESET ====================
 PASSWORD_RESET_TIMEOUT = 3600
+
 
 
 # ==================== SECURITY ====================
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
@@ -179,6 +305,7 @@ else:
     SECURE_HSTS_SECONDS = 0
 
 
+
 # ==================== MESSAGE TAGS ====================
 MESSAGE_TAGS = {
     messages.DEBUG: "debug",
@@ -188,10 +315,13 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
+
 # ==================== PAYMENT GATEWAY ====================
 PAYMENT_GATEWAY = config("PAYMENT_GATEWAY", default="razorpay")
 
+
 RAZORPAY_MODE = config("RAZORPAY_MODE", default="TEST").upper()
+
 
 if RAZORPAY_MODE == "LIVE":
     RAZORPAY_KEY_ID = config("RAZORPAY_LIVE_KEY_ID", default="")
@@ -200,11 +330,14 @@ else:
     RAZORPAY_KEY_ID = config("RAZORPAY_TEST_KEY_ID", default="")
     RAZORPAY_KEY_SECRET = config("RAZORPAY_TEST_KEY_SECRET", default="")
 
+
 RAZORPAY_CURRENCY = config("RAZORPAY_CURRENCY", default="INR")
 RAZORPAY_COMPANY_NAME = config("RAZORPAY_COMPANY_NAME", default="ShopZone")
 
+
 # ==================== SITE CONFIG ====================
 SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000")
+
 
 
 # ==================== LOGGING ====================
@@ -241,6 +374,7 @@ LOGGING = {
         },
     },
 }
+
 
 
 

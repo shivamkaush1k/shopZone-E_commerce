@@ -585,12 +585,13 @@ def profile_view(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
     user_orders = get_user_order_queryset(request.user)
     summary = get_account_summary(request.user)
-
+    
     context = {
-        "cart_items": CartItem.objects.filter(cart=cart).count(),
-        "wishlist_items": Wishlist.objects.filter(user=request.user).select_related("product")[:4],
-        "addresses": Address.objects.filter(user=request.user).order_by("-is_default", "-id"),
-        "recent_orders": user_orders.order_by("-created_at")[:5],
+        'cart_items': CartItem.objects.filter(cart=cart).count(),
+        'wishlist_items': Wishlist.objects.filter(user=request.user).select_related('product')[:4],
+        'addresses': Address.objects.filter(user=request.user).order_by('-is_default', '-id'),
+        'recent_orders': user_orders.order_by('-created_at')[:5],
+        'orders': user_orders.order_by('-created_at'),  # ← ADD THIS ONE LINE
         **summary,
     }
     return render(request, "profile.html", context)

@@ -39,7 +39,7 @@
             <span class="stat-label">Orders</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">{{ wishlist_count|default:0 }}</span>
+            <span class="stat-value">{{ wishlist_count|default:wishlist_items|length|default:0 }}</span>
             <span class="stat-label">Wishlist</span>
           </div>
           <div class="stat-item">
@@ -84,7 +84,7 @@
           </div>
           <div class="kpi-card">
             <span class="kpi-label">Wishlist</span>
-            <span class="kpi-value">{{ wishlist_count|default:0 }}</span>
+            <span class="kpi-value">{{ wishlist_count|default:wishlist_items|length|default:0 }}</span>
             <span class="kpi-meta">Saved items</span>
           </div>
           <div class="kpi-card">
@@ -101,42 +101,42 @@
           </div>
 
           {% if recent_orders %}
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for order in recent_orders %}
-                <tr>
-                  <td>#{{ order.id }}</td>
-                  <td>{{ order.created_at|date:"d M, Y" }}</td>
-                  <td class="status-cell">
-                    <span class="badge badge-{{ order.status }}">
-                      {{ order.get_status_display|default:order.status|capfirst }}
-                    </span>
-                  </td>
-                  <td>₹{{ order.total_amount }}</td>
-                  <td>
-                    <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in recent_orders %}
+                  <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d M, Y" }}</td>
+                    <td class="status-cell">
+                      <span class="badge badge-{{ order.status }}">
+                        {{ order.get_status_display|default:order.status|capfirst }}
+                      </span>
+                    </td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>
+                      <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
-          <div class="empty-state">
-            <h3>No orders yet</h3>
-            <p>Your orders will appear here once you start shopping.</p>
-            <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Start shopping</a>
-          </div>
+            <div class="empty-state">
+              <h3>No orders yet</h3>
+              <p>Your orders will appear here once you start shopping.</p>
+              <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Start shopping</a>
+            </div>
           {% endif %}
         </div>
       </section>
@@ -148,44 +148,44 @@
           </div>
 
           {% if orders %}
-          <div class="table-wrapper">
-            <table class="data-table orders-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                  <th>Items</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for order in orders %}
-                <tr>
-                  <td>#{{ order.id }}</td>
-                  <td>{{ order.created_at|date:"d M, Y" }}</td>
-                  <td class="status-cell">
-                    <span class="badge badge-{{ order.status }}">
-                      {{ order.get_status_display|default:order.status|capfirst }}
-                    </span>
-                  </td>
-                  <td>₹{{ order.total_amount }}</td>
-                  <td>{{ order.items.all|length }}</td>
-                  <td>
-                    <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+            <div class="table-wrapper">
+              <table class="data-table orders-table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d M, Y" }}</td>
+                    <td class="status-cell">
+                      <span class="badge badge-{{ order.status }}">
+                        {{ order.get_status_display|default:order.status|capfirst }}
+                      </span>
+                    </td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>{{ order.items.all|length }}</td>
+                    <td>
+                      <a href="{% url 'MyAccount:order_detail' order.id %}" class="btn btn-ghost btn-sm">View</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
-          <div class="empty-state">
-            <h3>No orders yet</h3>
-            <p>Looks like you haven't placed any orders.</p>
-            <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Browse products</a>
-          </div>
+            <div class="empty-state">
+              <h3>No orders yet</h3>
+              <p>Looks like you haven't placed any orders.</p>
+              <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Browse products</a>
+            </div>
           {% endif %}
         </div>
       </section>
@@ -193,32 +193,115 @@
       <section id="wishlist" class="content-section" role="tabpanel" hidden>
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Wishlist</h2>
+            <h2 class="card-title">Wishlist ({{ wishlist_count|default:wishlist_items|length|default:0 }})</h2>
+            <a href="{% url 'MyAccount:wishlist' %}" class="btn btn-primary btn-sm">View All</a>
           </div>
-          <div class="empty-state">
-            <p>Add your wishlist content here.</p>
-          </div>
+          
+          {% if wishlist_items %}
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Added</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in wishlist_items %}
+                  <tr>
+                    <td>{{ item.product.name|truncatewords:4 }}</td>
+                    <td>₹{{ item.product.price|floatformat:0 }}</td>
+                    <td>{{ item.created_at|date:"d M, Y" }}</td>
+                    <td>
+                      <a href="{% url 'MyStore:product_detail' item.product.slug %}" class="btn btn-ghost btn-sm">View</a>
+                      <a href="{% url 'MyAccount:wishlist' %}?remove_product_id={{ item.product.id }}" class="btn btn-ghost btn-sm text-danger">Remove</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <h3>No items in wishlist</h3>
+              <p>Add products to your wishlist from the product pages.</p>
+              <a href="{% url 'MyStore:product_list' %}" class="btn btn-primary">Start shopping</a>
+            </div>
+          {% endif %}
         </div>
       </section>
 
       <section id="addresses" class="content-section" role="tabpanel" hidden>
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Addresses</h2>
+            <h2 class="card-title">Saved Addresses ({{ addresses|length|default:0 }})</h2>
+            <a href="{% url 'MyAccount:add_address' %}" class="btn btn-primary btn-sm">Add New</a>
           </div>
-          <div class="empty-state">
-            <p>Add your addresses content here.</p>
-          </div>
+          
+          {% if addresses %}
+            {% for address in addresses %}
+              <div class="address-card {% if address.is_default %}default-address{% endif %} mb-3 p-4 border rounded">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="address-info flex-grow-1">
+                    <h4 class="mb-2">{{ address.name|default:"Personal" }}</h4>
+                    <p class="mb-1">{{ address.address_line1 }}{% if address.address_line2 %}<br>{{ address.address_line2 }}{% endif %}</p>
+                    <p class="mb-1">{{ address.city }}, {{ address.state }} - {{ address.postal_code }}</p>
+                    <p class="mb-0">{{ address.phone }}</p>
+                  </div>
+                  <div class="address-actions">
+                    {% if address.is_default %}
+                      <span class="badge badge-success mb-2 d-block">Default</span>
+                    {% endif %}
+                    <div class="btn-group-vertical">
+                      <a href="{% url 'MyAccount:edit_address' address.id %}" class="btn btn-ghost btn-sm mb-1">Edit</a>
+                      {% if not address.is_default %}
+                        <a href="{% url 'MyAccount:set_default_address' address.id %}" class="btn btn-ghost btn-sm">Set Default</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <h3>No addresses saved</h3>
+              <p>Add your delivery addresses for faster checkout.</p>
+              <a href="{% url 'MyAccount:add_address' %}" class="btn btn-primary">Add Address</a>
+            </div>
+          {% endif %}
         </div>
       </section>
 
       <section id="settings" class="content-section" role="tabpanel" hidden>
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Settings</h2>
+            <h2 class="card-title">Account Settings</h2>
           </div>
-          <div class="empty-state">
-            <p>Add your settings content here.</p>
+          
+          <div class="settings-grid">
+            <div class="setting-item mb-3">
+              <label class="form-label fw-bold">Full Name</label>
+              <p class="form-control-plaintext">{{ user.get_full_name|default:user.username }}</p>
+            </div>
+            <div class="setting-item mb-3">
+              <label class="form-label fw-bold">Email</label>
+              <p class="form-control-plaintext">{{ user.email }}</p>
+            </div>
+            {% if user.userprofile %}
+              {% if user.userprofile.phone %}
+              <div class="setting-item mb-3">
+                <label class="form-label fw-bold">Phone</label>
+                <p class="form-control-plaintext">{{ user.userprofile.phone }}</p>
+              </div>
+              {% endif %}
+            {% endif %}
+          </div>
+          
+          <div class="card-actions mt-4">
+            <a href="{% url 'MyAccount:edit_profile' %}" class="btn btn-primary me-2">Edit Profile</a>
+            <a href="{% url 'MyAccount:change_password' %}" class="btn btn-ghost">Change Password</a>
           </div>
         </div>
       </section>
