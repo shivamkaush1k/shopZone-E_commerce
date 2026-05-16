@@ -87,26 +87,26 @@ def signup_view(request):
         # Validation
         if not all([username, email, password, confirm_password]):
             messages.error(request, 'All fields are required')
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
         
         if password != confirm_password:
             messages.error(request, 'Passwords do not match')
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
         
         try:
             validate_password(password)
         except ValidationError as e:
             for error in e.messages:
                 messages.error(request, error)
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
         
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists')
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
         
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already registered')
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
         
         try:
             # Create user + profile
@@ -124,9 +124,9 @@ def signup_view(request):
             
         except Exception as e:
             messages.error(request, 'An error occurred during registration')
-            return render(request, 'signup.html')
+            return render(request, 'signUp.html')
   
-    return render(request, 'signup.html')
+    return render(request, 'signUp.html')
 
 def forgot_password_view(request):
     if request.method == 'POST':
