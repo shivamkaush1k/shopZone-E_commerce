@@ -85,6 +85,7 @@ WSGI_APPLICATION = "e_commerce.wsgi.application"
 
 
 # ==================== DATABASE ====================
+# ==================== DATABASE ====================
 def _database_config_from_url(database_url: str) -> dict:
     parsed = urlparse(database_url)
     engine = {
@@ -97,12 +98,10 @@ def _database_config_from_url(database_url: str) -> dict:
         "sqlite3": "django.db.backends.sqlite3",
     }.get(parsed.scheme.lower())
 
-
     if not engine:
         raise ImproperlyConfigured(
             "Unsupported DATABASE_URL scheme. Use postgres://, postgresql://, mysql://, or sqlite:///."
         )
-
 
     if engine == "django.db.backends.sqlite3":
         db_path = unquote(parsed.path.lstrip("/")) or "db.sqlite3"
@@ -110,7 +109,6 @@ def _database_config_from_url(database_url: str) -> dict:
             "ENGINE": engine,
             "NAME": str(BASE_DIR / db_path),
         }
-
 
     db_config = {
         "ENGINE": engine,
@@ -121,7 +119,6 @@ def _database_config_from_url(database_url: str) -> dict:
         "PORT": str(parsed.port or ""),
     }
 
-
     query_options = dict(parse_qsl(parsed.query, keep_blank_values=True))
     if engine == "django.db.backends.mysql":
         db_config["OPTIONS"] = {
@@ -129,15 +126,12 @@ def _database_config_from_url(database_url: str) -> dict:
             "charset": "utf8mb4",
             "ssl": {
                 "ca": "/etc/secrets/aiven-ca.pem",
-
             },
         }
     elif query_options:
         db_config["OPTIONS"] = query_options
 
-
     return db_config
-
 
 
 def _database_config_from_env() -> dict:
@@ -150,12 +144,10 @@ def _database_config_from_env() -> dict:
         "sqlite3": "django.db.backends.sqlite3",
     }.get(db_engine)
 
-
     if not engine:
         raise ImproperlyConfigured(
             "Unsupported DB_ENGINE value. Use mysql, postgres, postgresql, sqlite, or sqlite3."
         )
-
 
     if engine == "django.db.backends.sqlite3":
         return {
@@ -163,36 +155,31 @@ def _database_config_from_env() -> dict:
             "NAME": config("DB_NAME", default=str(BASE_DIR / "db.sqlite3")),
         }
 
-
     db_host = config("DB_HOST", default="localhost").strip()
     if not DEBUG and db_host in {"", "localhost", "127.0.0.1"}:
         raise ImproperlyConfigured(
             "Production database is not configured. Set DATABASE_URL or remote DB_* values on Render."
         )
 
-
     db_config = {
         "ENGINE": engine,
-        "NAME": config("DB_NAME", default="defaultdb"),  # ← changed to defaultdb
-        "USER": config("DB_USER", default="avnadmin"),   # ← set to avnadmin
+        "NAME": config("DB_NAME", default="defaultdb"),
+        "USER": config("DB_USER", default="avnadmin"),
         "PASSWORD": config("DB_PASSWORD", default=""),
         "HOST": db_host,
-        "PORT": config("DB_PORT", default="17573"),     # ← set to Aiven port
+        "PORT": config("DB_PORT", default="17573"),
     }
-
 
     if engine == "django.db.backends.mysql":
         db_config["OPTIONS"] = {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
             "charset": "utf8mb4",
             "ssl": {
-                "ca": str(BASE_DIR / "certs" / "aiven-ca.pem"),
+                "ca": "/etc/secrets/aiven-ca.pem",
             },
         }
 
-
     return db_config
-
 
 
 DATABASE_URL = config("DATABASE_URL", default="").strip()
@@ -201,8 +188,6 @@ DATABASES = {
     if DATABASE_URL
     else _database_config_from_env()
 }
-
-
 
 # ==================== AUTH ====================
 AUTHENTICATION_BACKENDS = [
