@@ -128,7 +128,8 @@ def _database_config_from_url(database_url: str) -> dict:
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
             "charset": "utf8mb4",
             "ssl": {
-                "ca": str(BASE_DIR / "certs" / "aiven-ca.pem"),
+                "ca": "/etc/secrets/aiven-ca.pem",
+
             },
         }
     elif query_options:
