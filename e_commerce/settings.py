@@ -1,6 +1,3 @@
-"""
-Django settings for e_commerce project.
-"""
 import os
 from pathlib import Path
 from urllib.parse import parse_qsl, unquote, urlparse
@@ -8,21 +5,32 @@ from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 from decouple import config
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
-# ==================== CORE SETTINGS ====================
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = [host.strip() for host in config(
-    "ALLOWED_HOSTS",
-    default="127.0.0.1,localhost,shopzone-e-commerce.onrender.com"
-).split(",") if host.strip()]
 
+render_host = config("RENDER_EXTERNAL_HOSTNAME", default="").strip()
+default_hosts = ["127.0.0.1", "localhost"]
+if render_host:
+    default_hosts.append(render_host)
+default_hosts.append("shopzone-e-commerce.onrender.com")
 
-# ==================== APPLICATIONS ====================
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config("ALLOWED_HOSTS", default=",".join(default_hosts)).split(",")
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config(
+        "CSRF_TRUSTED_ORIGINS",
+        default="https://shopzone-e-commerce.onrender.com"
+    ).split(",")
+    if origin.strip()
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -30,12 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-
     "import_export",
     "razorpay",
-
-
     "MyAccount",
     "MyStore",
     "PaymentMethod",
@@ -43,10 +47,9 @@ INSTALLED_APPS = [
     "login",
 ]
 
-
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -55,11 +58,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
-
 ROOT_URLCONF = "e_commerce.urls"
-
-
 
 TEMPLATES = [
     {
@@ -78,14 +77,9 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = "e_commerce.wsgi.application"
 
 
-
-# ==================== DATABASE ====================
-# ==================== DATABASE ====================
 def _database_config_from_url(database_url: str) -> dict:
     parsed = urlparse(database_url)
     engine = {
@@ -117,6 +111,7 @@ def _database_config_from_url(database_url: str) -> dict:
         "PASSWORD": unquote(parsed.password or ""),
         "HOST": parsed.hostname or "",
         "PORT": str(parsed.port or ""),
+        "CONN_MAX_AGE": config("DB_CONN_MAX_AGE", default=600, cast=int),
     }
 
     query_options = dict(parse_qsl(parsed.query, keep_blank_values=True))
@@ -168,6 +163,7 @@ def _database_config_from_env() -> dict:
         "PASSWORD": config("DB_PASSWORD", default=""),
         "HOST": db_host,
         "PORT": config("DB_PORT", default="17573"),
+        "CONN_MAX_AGE": config("DB_CONN_MAX_AGE", default=600, cast=int),
     }
 
     if engine == "django.db.backends.mysql":
@@ -189,20 +185,15 @@ DATABASES = {
     else _database_config_from_env()
 }
 
-# ==================== AUTH ====================
 AUTHENTICATION_BACKENDS = [
     "login.backends.EmailOrUsernameBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-
 LOGIN_URL = "login:login"
 LOGIN_REDIRECT_URL = "MyAccount:dashboard"
 LOGOUT_REDIRECT_URL = "login:home"
 
-
-
-# ==================== PASSWORD VALIDATION ====================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -210,71 +201,50 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-
-# ==================== INTERNATIONALIZATION ====================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-
-
-# ==================== STATIC & MEDIA ====================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-
-# ==================== EMAIL ====================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
 EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = config(
-    "DEFAULT_FROM_EMAIL",
-    default="ShopZone <noreply@shopzone.com>"
-)
-CONTACT_RECEIVER_EMAIL = config(
-    "CONTACT_RECEIVER_EMAIL",
-    default=EMAIL_HOST_USER
-)
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="ShopZone <noreply@shopzone.com>")
+CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=EMAIL_HOST_USER)
 
-
-
-# ==================== SMS ====================
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID", default="")
 TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN", default="")
 TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER", default="")
 
-
-
-# ==================== SESSION ====================
 SESSION_COOKIE_AGE = 1209600
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-
-
-# ==================== PASSWORD RESET ====================
 PASSWORD_RESET_TIMEOUT = 3600
 
-
-
-# ==================== SECURITY ====================
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
-
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
@@ -290,9 +260,6 @@ else:
     CSRF_COOKIE_SECURE = False
     SECURE_HSTS_SECONDS = 0
 
-
-
-# ==================== MESSAGE TAGS ====================
 MESSAGE_TAGS = {
     messages.DEBUG: "debug",
     messages.INFO: "info",
@@ -301,13 +268,8 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
-
-# ==================== PAYMENT GATEWAY ====================
 PAYMENT_GATEWAY = config("PAYMENT_GATEWAY", default="razorpay")
-
-
 RAZORPAY_MODE = config("RAZORPAY_MODE", default="TEST").upper()
-
 
 if RAZORPAY_MODE == "LIVE":
     RAZORPAY_KEY_ID = config("RAZORPAY_LIVE_KEY_ID", default="")
@@ -316,17 +278,10 @@ else:
     RAZORPAY_KEY_ID = config("RAZORPAY_TEST_KEY_ID", default="")
     RAZORPAY_KEY_SECRET = config("RAZORPAY_TEST_KEY_SECRET", default="")
 
-
 RAZORPAY_CURRENCY = config("RAZORPAY_CURRENCY", default="INR")
 RAZORPAY_COMPANY_NAME = config("RAZORPAY_COMPANY_NAME", default="ShopZone")
-
-
-# ==================== SITE CONFIG ====================
 SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000")
 
-
-
-# ==================== LOGGING ====================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -345,25 +300,14 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "payment.log",
-            "formatter": "verbose",
-        },
     },
     "loggers": {
         "MyStore.payment": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
     },
 }
 
-
-
-
-
-# For phone numbers
-PHONENUMBER_DEFAULT_REGION = 'IN'  # India (+91)
+PHONENUMBER_DEFAULT_REGION = "IN"
